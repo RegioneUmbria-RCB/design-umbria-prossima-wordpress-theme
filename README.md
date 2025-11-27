@@ -1,4 +1,4 @@
-# ![Regione Umbria](https://via.placeholder.com/36x36 "Regione Umbria") Template WordPress Prossima
+# ![Regione Umbria](docs/images/logo_regione_white.png "Regione Umbria") Template WordPress Prossima
 
 [![Slack](https://img.shields.io/badge/Supporto-Slack-blue.svg)](https://developersitalia.slack.com/)
 [![WordPress](https://img.shields.io/badge/WordPress-6.8.3-blue.svg)](https://wordpress.org/)
@@ -509,11 +509,6 @@ L'applicazione converte automaticamente tutte le immagini caricate nella libreri
 
 Il sistema manterrà centrata e visibile quest'area nelle varie risoluzioni (desktop e mobile), evitando ritagli automatici indesiderati e garantendo che gli elementi principali (volti, dettagli rilevanti) restino sempre correttamente inquadrati.
 
----
-
-## **Supporto e community**
-
-### Contatti Regione Umbria : 
 
 
 ---
