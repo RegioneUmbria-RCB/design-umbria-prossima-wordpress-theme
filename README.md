@@ -20,7 +20,7 @@
 - [Impostazioni Template](#impostazioni-template)
 - [Gestione ruoli e permessi](#gestione-ruoli-e-permessi)
 - [Ottimizzazione immagini](#ottimizzazione-immagini-e-gestione-focal-point)
-- [Supporto e community](#supporto-e-community)
+- [Aggiornamento strutture dati](#aggiornamento-strutture-dati-da-design-italia)
 - [FAQ](#faq)
 - [Licenze](#licenze)
 
@@ -99,71 +99,6 @@ Gli enti che ne faranno richiesta alla Regione Umbria riceveranno il pacchetto `
 5. **Accesso**: al termine, accedere all'area di amministrazione da `www.nomeente.it/wp-admin` con le credenziali definite in fase di installazione;
 
 6. **Attivazione del tema**: andare su `Aspetto > Temi` e attivare **"Tema Sito"**.
-
-### Aggiornamento strutture dati da Design Italia
-
-L'applicazione è stata sviluppata a partire dalla struttura dati del tema originale Design Italia, estesa e adattata per garantire maggiore flessibilità.
-
-Per gestire eventuali aggiornamenti provenienti dal tema originale, è stata implementata una sezione dedicata, accessibile dal menu:
-
-**`Strumenti > Aggiorna strutture dati`**
-
-All'interno di quest'area è possibile integrare gli aggiornamenti delle strutture dati di Design Italia semplicemente cliccando sul pulsante dedicato. Il sistema scarica automaticamente il pacchetto del tema originale dalla repository GitHub ufficiale ([design-comuni-wordpress-theme](https://github.com/italia/design-comuni-wordpress-theme)) e aggiorna soltanto le parti interessate, mantenendo le personalizzazioni locali.
-
-![Aggiorna strutture dati](docs/images/image15.jpg)
-*Menu Strumenti > Aggiorna strutture dati*
-
-#### Cosa viene aggiornato
-
-Quando si esegue l'aggiornamento, il sistema sincronizza automaticamente:
-
-- **Tipologie di post** (custom post types)
-- **Tassonomie** (categorie, argomenti, focus, ecc.)
-- **Options** (configurazioni e impostazioni)
-- **File di definizione** (`comuni_tipologie.json`, `comuni_pagine.json`)
-
-I file vengono scaricati dalla repository ufficiale e salvati localmente nella cartella:
-
-```
-/inc/origin-tema-comuni/
-├── tipologie/
-├── tassonomie/
-├── options/
-├── comuni_tipologie.json
-└── comuni_pagine.json
-```
-
-#### Personalizzazione avanzata: disattivare l'aggiornamento automatico
-
-Se si desidera utilizzare **content type completamente personalizzati** senza sincronizzazione con il tema Design Italia, è possibile disattivare la funzione di aggiornamento automatico.
-
-**Procedura:**
-
-1. Aprire il file del tema:
-   ```
-   /design_umbria_prossima/inc/functions/update-origin-theme-dataset.php
-   ```
-
-2. Commentare le righe da **3 a 12** che registrano il menu di aggiornamento:
-   ```php
-   // add_action('admin_menu', function () {
-   //     add_submenu_page(
-   //         'tools.php',
-   //         'Aggiorna strutture dati',
-   //         'Aggiorna strutture dati',
-   //         'manage_options',
-   //         'importa-sezioni-tema',
-   //         'pagina_import_sezioni'
-   //     );
-   // });
-   ```
-
-3. Modificare manualmente i content type nelle seguenti cartelle:
-   - **Tipologie**: `/inc/origin-tema-comuni/tipologie/`
-   - **Tassonomie**: `/inc/origin-tema-comuni/tassonomie/`
-   - **Options**: `/inc/origin-tema-comuni/options/`
-
-> **⚠️ Attenzione:** Disattivando l'aggiornamento automatico, si perde la sincronizzazione con gli aggiornamenti ufficiali del tema Design Italia. Questa operazione è consigliata solo per sviluppatori esperti che necessitano di personalizzazioni avanzate non compatibili con il modello standard.
 
 ---
 
@@ -509,7 +444,72 @@ L'applicazione converte automaticamente tutte le immagini caricate nella libreri
 
 Il sistema manterrà centrata e visibile quest'area nelle varie risoluzioni (desktop e mobile), evitando ritagli automatici indesiderati e garantendo che gli elementi principali (volti, dettagli rilevanti) restino sempre correttamente inquadrati.
 
+---
 
+## **Aggiornamento strutture dati da Design Italia**
+
+L'applicazione è stata sviluppata a partire dalla struttura dati del tema originale Design Italia, estesa e adattata per garantire maggiore flessibilità.
+
+Per gestire eventuali aggiornamenti provenienti dal tema originale, è stata implementata una sezione dedicata, accessibile dal menu:
+
+**`Strumenti > Aggiorna strutture dati`**
+
+All'interno di quest'area è possibile integrare gli aggiornamenti delle strutture dati di Design Italia semplicemente cliccando sul pulsante dedicato. Il sistema scarica automaticamente il pacchetto del tema originale dalla repository GitHub ufficiale ([design-comuni-wordpress-theme](https://github.com/italia/design-comuni-wordpress-theme)) e aggiorna soltanto le parti interessate, mantenendo le personalizzazioni locali.
+
+![Aggiorna strutture dati](docs/images/image15.jpg)
+*Menu Strumenti > Aggiorna strutture dati*
+
+### Cosa viene aggiornato
+
+Quando si esegue l'aggiornamento, il sistema sincronizza automaticamente:
+
+- **Tipologie di post** (custom post types)
+- **Tassonomie** (categorie, argomenti, focus, ecc.)
+- **Options** (configurazioni e impostazioni)
+- **File di definizione** (`comuni_tipologie.json`, `comuni_pagine.json`)
+
+I file vengono scaricati dalla repository ufficiale e salvati localmente nella cartella:
+
+```
+/inc/origin-tema-comuni/
+├── tipologie/
+├── tassonomie/
+├── options/
+├── comuni_tipologie.json
+└── comuni_pagine.json
+```
+
+### Personalizzazione avanzata: disattivare l'aggiornamento automatico
+
+Se si desidera utilizzare **content type completamente personalizzati** senza sincronizzazione con il tema Design Italia, è possibile disattivare la funzione di aggiornamento automatico.
+
+**Procedura:**
+
+1. Aprire il file del tema:
+   ```
+   /design_umbria_prossima/inc/functions/update-origin-theme-dataset.php
+   ```
+
+2. Commentare le righe da **3 a 12** che registrano il menu di aggiornamento:
+   ```php
+   // add_action('admin_menu', function () {
+   //     add_submenu_page(
+   //         'tools.php',
+   //         'Aggiorna strutture dati',
+   //         'Aggiorna strutture dati',
+   //         'manage_options',
+   //         'importa-sezioni-tema',
+   //         'pagina_import_sezioni'
+   //     );
+   // });
+   ```
+
+3. Modificare manualmente i content type nelle seguenti cartelle:
+   - **Tipologie**: `/inc/origin-tema-comuni/tipologie/`
+   - **Tassonomie**: `/inc/origin-tema-comuni/tassonomie/`
+   - **Options**: `/inc/origin-tema-comuni/options/`
+
+> **⚠️ Attenzione:** Disattivando l'aggiornamento automatico, si perde la sincronizzazione con gli aggiornamenti ufficiali del tema Design Italia. Questa operazione è consigliata solo per sviluppatori esperti che necessitano di personalizzazioni avanzate non compatibili con il modello standard.
 
 ---
 
