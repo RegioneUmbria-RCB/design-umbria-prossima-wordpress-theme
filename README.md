@@ -8,7 +8,7 @@
 
 ### I primi passi con il tema WordPress Prossima
 
-**Template WordPress Prossima** è un tema WordPress riutilizzabile e sostenibile, progettato per essere facilmente adottato da enti locali, comuni e strutture della Pubblica Amministrazione che operano sotto il coordinamento della Regione Umbria. Il template aderisce al [modello di sito istituzionale](https://designers.italia.it/modello/comuni/) progettato nell'ambito del progetto Designers Italia dal Dipartimento per la trasformazione digitale.
+**Template WordPress Prossima** è un tema WordPress riutilizzabile, progettato per essere facilmente adottato da enti locali. Il template aderisce al [modello di sito istituzionale](https://designers.italia.it/modello/comuni/) progettato nell'ambito del progetto Designers Italia dal Dipartimento per la trasformazione digitale.
 
 ## **Indice**
 
@@ -27,8 +27,6 @@
 ---
 
 ## **Premessa**
-
-La realizzazione del template WordPress Sito Istituzionale nasce con l'obiettivo di fornire un'applicazione web riutilizzabile e sostenibile, pensata per essere facilmente adottata da enti locali, comuni e strutture della Pubblica Amministrazione che operano sotto il coordinamento della Regione Umbria, o che richiedono una soluzione digitale in linea con le direttive nazionali.
 
 Il template è concepito come una base solida e configurabile, che consente:
 
@@ -76,9 +74,6 @@ max_execution_time = 300
 
 ---
 
-## **Installazione del template**
-
-Gli enti che ne faranno richiesta alla Regione Umbria riceveranno il pacchetto `template_sito.zip`, contenente il tema WordPress.
 
 ### Procedura di installazione
 
