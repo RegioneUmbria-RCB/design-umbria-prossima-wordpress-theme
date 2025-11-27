@@ -1,4 +1,4 @@
-# ![Regione Umbria](docs/images/logo_regione_white.png "Regione Umbria") Template WordPress Prossima
+# ![Regione Umbria](docs/images/logo_regione_white.png "Regione Umbria") Template Wordpress “Design Umbria Prossima”
 
 [![Slack](https://img.shields.io/badge/Supporto-Slack-blue.svg)](https://developersitalia.slack.com/)
 [![WordPress](https://img.shields.io/badge/WordPress-6.8.3-blue.svg)](https://wordpress.org/)
@@ -8,7 +8,11 @@
 
 ### I primi passi con il tema WordPress Prossima
 
-**Template WordPress Prossima** è un tema WordPress riutilizzabile, progettato per essere facilmente adottato da enti locali. Il template aderisce al [modello di sito istituzionale](https://designers.italia.it/modello/comuni/) progettato nell'ambito del progetto Designers Italia dal Dipartimento per la trasformazione digitale.
+Il template è stato realizzato da Regione Umbria, in collaborazione con la società in house PuntoZero Scarl, puntando ad una piena implementazione delle linee guida AgID e del design system .Italia (impiegato anche nella misura PNRR 1.4.1) quale base per il consolidamento progressivo o dei siti istituzionali e tematici della Regione e delle articolazioni regionali ("gruppo amministrazione pubblica" - GAP - e altri soggetti pubblici regionali) nella logica integrata e coordinata dell’accesso unico regionale (LR n.8/2011).
+
+Obiettivo principale del template è quello di rendere semplice l'accesso ai contenuti, garantendo la coerenza delle informazioni di una "aggregazione di soggetti pubblici" che si coordinano secondo precisi "content type" ovvero con un approccio "data-first" che permetta la progressiva automazione dei processi di pubblicazione a partire da dataset open data e/o da altre banche dati interne.. 
+
+Il template è un tema WordPress riutilizzabile da chiunque, progettato per essere facilmente adottato da enti pubblici, aderisce al "design system .Italia" e riusa parti del "modello di sito istituzionale" progettati nell'ambito dell'iniziativa Designers Italia dal Dipartimento per la trasformazione digitale nel rispetto delle LG sul design web e sull'accessibilità definite da AgID.e.
 
 ## **Indice**
 
@@ -510,9 +514,9 @@ Se si desidera utilizzare **content type completamente personalizzati** senza si
 
 ## **FAQ**
 
-### ❓ Chi può richiedere il template?
+### ❓ A chi posso rivolgermi per informazioni?
 
-Gli enti locali, comuni e strutture della Pubblica Amministrazione che operano sotto il coordinamento della Regione Umbria possono richiedere il pacchetto di installazione.
+Il template è fornito "as is" senza nessuna garanzia, supporto o assistenza. Per informazioni generali è possibile scrivere alla mail:  accessounico@regione.umbria.it
 
 ### ❓ Il template è conforme alle normative AGID?
 
