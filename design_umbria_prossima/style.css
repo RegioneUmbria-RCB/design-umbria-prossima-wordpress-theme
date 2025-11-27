@@ -1,0 +1,197 @@
+/*
+Theme Name: Design Umbria Prossima
+Author: PuntoZero s.c.a.r.l.
+Version: 1.0
+*/
+
+@import url("inc/origin-tema-comuni/css/bootstrap-italia-fonts.css");
+
+.form-check [type="checkbox"]:focus + label,
+.form-check [type="radio"]:focus + label,
+.toggles label input[type="checkbox"]:focus + .lever,
+:focus:not(.focus--mouse) {
+  border-color: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  outline-offset: 0;
+}
+
+.repeater-home > div:nth-child(odd) {
+  background-color: #ebeef0;
+}
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+
+.it-carousel-wrapper.it-carousel-landscape-abstract-three-cols-arrow-visible
+  .lined_slide:after {
+  display: none;
+}
+
+.home-hero {
+  height: 340px !important;
+  min-height: 340px !important;
+  align-items: center !important;
+}
+
+@media screen and (min-width: 991px) {
+  .home-hero {
+    height: 450px !important;
+    min-height: 450px !important;
+  }
+}
+
+.theme-blue {
+  --bs-primary: #06c;
+  --bs-link-hover-color: #06c;
+}
+.theme-red {
+  --bs-primary: #e74c3c;
+  --bs-link-hover-color: #e74c3c;
+}
+.theme-orange {
+  --bs-primary: #e67e22;
+  --bs-link-hover-color: #e67e22;
+}
+.theme-yellow {
+  --bs-primary: #f39c12;
+  --bs-link-hover-color: #f39c12;
+}
+.theme-green {
+  --bs-primary: #007a52;
+  --bs-link-hover-color: #007a52;
+}
+.theme-violet {
+  --bs-primary: #8e44ad;
+  --bs-link-hover-color: #8e44ad;
+}
+.theme-brown {
+  --bs-primary: #8e5a2e;
+  --bs-link-hover-color: #8e5a2e;
+}
+.theme-dark-gray {
+  --bs-primary: #2c3e50;
+  --bs-link-hover-color: #2c3e50;
+}
+.theme-turquoise {
+  --bs-primary: #16a085;
+  --bs-link-hover-color: #16a085;
+}
+
+.it-hero-wrapper,
+.it-header-navbar-wrapper,
+.it-header-center-wrapper,
+.bg-primary,
+.btn-primary,
+.splide__arrow,
+.navbar,
+.form-check-input:checked,
+.form-check [type="checkbox"]:checked + label:after,
+.it-carousel-wrapper .splide__pagination button.is-active {
+  background: var(--bs-primary) !important;
+}
+.form-check-input:checked,
+.form-check [type="checkbox"]:checked + label:after {
+  border-color: var(--bs-primary) !important;
+}
+.splide__arrow {
+  border: 1px solid #ffffff !important;
+}
+.it-header-slim-wrapper {
+  background: color-mix(in srgb, var(--bs-primary) 80%, black) !important;
+}
+.text-primary,
+.cmp-navscroll * {
+  color: var(--bs-primary) !important;
+}
+.icon-primary {
+  fill: var(--bs-primary) !important;
+}
+.chip {
+  border-color: var(--bs-primary) !important;
+}
+.chip:is(a):hover:not(.chip-disabled) {
+  background-color: var(--bs-primary) !important;
+}
+.chip:is(a):hover:not(.chip-disabled) > .chip-label {
+  color: #ffffff !important;
+}
+.chip .chip-label {
+  color: var(--bs-primary);
+}
+
+aside
+  .cmp-navscroll
+  .navbar.it-navscroll-wrapper
+  .link-list-wrapper
+  ul
+  li
+  a.active {
+  border-left: 2px solid var(--bs-primary) !important;
+}
+
+.alert-success {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='hsl(160deg, 100%, 25%)' d='M17.1 7.9l.7.7-7.8 7.6-4.7-4.6.7-.7 4 3.9zM22 12A10 10 0 1 1 12 2a10 10 0 0 1 10 10zm-1 0a9 9 0 1 0-9 9 9 9 0 0 0 9-9z'%3E%3C/path%3E%3C/svg%3E") !important;
+}
+
+.pagination .page-item .page-link[aria-current] {
+  border: 1px solid var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+  pointer-events: none;
+}
+
+.btn-outline-primary {
+  color: var(--bs-primary) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary) !important;
+}
+
+.btn-secondary {
+  color: #ffffff !important;
+}
+
+.link-list-wrapper ul li a:hover:not(.disabled) .icon {
+  fill: var(--bs-primary) !important;
+}
+
+.rating:not(:checked) > label:hover svg,
+.rating:not(:checked) > label:hover ~ label svg,
+.rating > input:checked + label:hover + svg,
+.rating > input:checked ~ label svg,
+.rating > input:checked ~ label:hover + svg,
+.rating > input:checked ~ label:hover ~ label + svg,
+.rating > label:hover ~ input:checked ~ label + svg {
+  fill: var(--bs-primary) !important;
+}
+
+.form-check [type="radio"]:checked + label:before {
+  border-color: var(--bs-primary) !important;
+}
+.form-check [type="radio"]:checked + label:after {
+  border-color: var(--bs-primary) !important;
+  background-color: var(--bs-primary) !important;
+}
+
+@media screen and (max-width: 991px) {
+  .navbar-backdrop.show {
+    z-index: -1 !important;
+  }
+  .menu-wrapper {
+    background: #ffffff !important;
+    z-index: 10;
+    * {
+      color: #000000;
+      fill: var(--bs-primary) !important;
+    }
+  }
+
+  .navbar .navbar-collapsable .navbar-nav li a.nav-link {
+    color: var(--bs-primary) !important;
+  }
+}

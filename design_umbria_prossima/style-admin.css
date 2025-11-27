@@ -1,0 +1,31 @@
+.cmb-repeatable-group {
+  border: 4px solid #ccc !important;
+  border-radius: 15px;
+  margin: 40px 0 !important;
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: #ffffff;
+
+  .cmb2-metabox-description {
+    color: #000000;
+    font-size: 18px;
+    padding-bottom: 0.2rem !important;
+  }
+}
+
+input[name="submit-cmb"] {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  z-index: 100;
+  padding: 0 2rem !important;
+  font-size: 20px !important;
+}
+
+.select2-selection--single {
+  position: relative;
+  .select2-selection__arrow {
+    position: absolute;
+    right: 0;
+  }
+}
