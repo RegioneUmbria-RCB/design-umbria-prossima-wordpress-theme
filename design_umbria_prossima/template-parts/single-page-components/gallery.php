@@ -2,14 +2,18 @@
 global $post;
 global $gallery_field;
 $media = dci_get_meta($gallery_field);
+if (!is_array($media)) {
+  $media = !empty($media) ? array($media) : array();
+}
 ?>
 
+<?php if (!empty($media)) : ?>
 <article id="gallery" class="it-page-section mb-30 mt-5">
   <h3 class="h4 mb-3">Galleria fotografica</h3>
   <div class="row g-4">  
     <?php 
     $index = 0;
-    foreach($media as $file): 
+    foreach ($media as $file) : 
       $attachment_id = attachment_url_to_postid($file);
       $alt = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
       if (empty($alt)) {
@@ -42,6 +46,7 @@ $media = dci_get_meta($gallery_field);
     endforeach; ?>
   </div>
 </article>
+<?php endif; ?>
 
 <!-- Modal -->
 <div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">

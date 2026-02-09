@@ -40,14 +40,35 @@ get_header();
             $canale_fisico_text = dci_get_meta("canale_fisico_text");
             $canale_fisico_uffici = dci_get_meta("canale_fisico_uffici");
 
+            // URL pagina "Prenota appuntamento" (template page-templates/prenota-appuntamento.php)
+            $prenota_appuntamento_url = home_url( '/' );
+            if ( function_exists( 'dci_get_template_page_url' ) ) {
+                $prenota_appuntamento_url = dci_get_template_page_url( 'page-templates/prenota-appuntamento.php' );
+            } else {
+                $pagine_prenota = get_posts( array(
+                    'post_type'      => 'page',
+                    'posts_per_page' => 1,
+                    'meta_key'       => '_wp_page_template',
+                    'meta_value'     => 'page-templates/prenota-appuntamento.php',
+                    'fields'         => 'ids',
+                    'post_status'    => 'publish',
+                ) );
+                if ( ! empty( $pagine_prenota ) ) {
+                    $prenota_appuntamento_url = get_permalink( $pagine_prenota[0] );
+                }
+            }
+
             $more_info = dci_get_wysiwyg_field("ulteriori_informazioni");
             $condizioni_servizio = dci_get_meta("condizioni_servizio");     
             $uo_id = intval(dci_get_meta("unita_responsabile"));
             $argomenti = get_the_terms($post, 'argomenti');
+            if ( ! is_array($argomenti) ) {
+                $argomenti = array();
+            }
 
             // valori per metatag
             $categorie = get_the_terms($post, 'categorie_servizio');
-            $categoria_servizio = $categorie[0]->name;
+            $categoria_servizio = ( is_array($categorie) && isset($categorie[0]) ) ? $categorie[0]->name : '';
             $ipa = dci_get_meta('codice_ente_erogatore');
             $copertura_geografica = dci_get_wysiwyg_field("copertura_geografica");
             if ($canale_fisico_uffici[0]??null) {
@@ -107,57 +128,48 @@ get_header();
                 }
             </script>
             <div class="container" id="main-container">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-lg-10">
+                <div class="row">
+                    <div class="col px-lg-4">
                         <?php get_template_part("template-parts/single-page-components/breadcrumb"); ?>
                     </div>
                 </div>
-            </div>
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-lg-10">
-                        <div class="cmp-heading pb-3 pb-lg-4">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h1 class="title-xxxlarge" data-element="service-title">
-                                        <?php the_title(); ?>
-                                    </h1>
-                                    <ul class="d-flex flex-wrap gap-1 my-3">
-                                        <li>
-                                            <div class="chip chip-simple <?php echo $stato == 'true'? 'chip-success' : 'chip-danger'; ?>" data-element="service-status">
-                                                <span class="chip-label">
-                                                <?php if ( $stato == 'true' ) {
-                                                    echo 'Servizio attivo';
-                                                } else echo 'Servizio non attivo'
-                                                ?>
-                                                </span>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <p class="subtitle-small mb-3" data-element="service-description">
-                                        <?php echo $descrizione_breve ?>
-                                    </p>
-                                    <?php if ($canale_digitale_link) { ?>
-                                    <button type="button" class="btn btn-primary fw-bold" onclick="location.href='<?php echo $canale_digitale_link; ?>';">
-                                        <span class=""><?php echo $canale_digitale_label; ?></span>
-                                    </button>
-                                    <?php } ?>
-                                </div>
-                                <div class="col-lg-3 offset-lg-1 mt-5 mt-lg-0">
-                                    <?php
-                                        $hide_arguments = true;
-                                        get_template_part('template-parts/single-page-components/actions');
+                <div class="row">
+                    <div class="col-lg-8 px-lg-4 py-lg-2">
+                        <h1 class="title-xxxlarge" data-audio data-element="service-title">
+                            <?php the_title(); ?>
+                        </h1>
+                        <ul class="d-flex flex-wrap gap-1 my-3">
+                            <li>
+                                <div class="chip chip-simple <?php echo $stato == 'true'? 'chip-success' : 'chip-danger'; ?>" data-element="service-status">
+                                    <span class="chip-label">
+                                    <?php if ( $stato == 'true' ) {
+                                        echo 'Servizio attivo';
+                                    } else echo 'Servizio non attivo'
                                     ?>
+                                    </span>
                                 </div>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
+                        <p class="subtitle-small mb-3" data-element="service-description">
+                            <?php echo $descrizione_breve ?>
+                        </p>
+                        <?php if ($canale_digitale_link) { ?>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="location.href='<?php echo $canale_digitale_link; ?>';">
+                            <span class=""><?php echo $canale_digitale_label; ?></span>
+                        </button>
+                        <?php } ?>
                     </div>
-                    <hr class="d-none d-lg-block mt-2"/>
+                    <div class="col-lg-3 offset-lg-1">
+                        <?php
+                            $hide_arguments = true;
+                            get_template_part('template-parts/single-page-components/actions');
+                        ?>
+                    </div>
                 </div>
             </div>
             <div class="container">
-                <div class="row row-column-menu-left mt-4 mt-lg-80 pb-lg-80 pb-40">
-                    <div class="col-12 col-lg-3 mb-4 border-col">
+                <div class="row border-top border-light row-column-border row-column-menu-left">
+                    <aside class="col-lg-4">
                         <div class="cmp-navscroll sticky-top" aria-labelledby="accordion-title-one">
                             <nav class="navbar it-navscroll-wrapper navbar-expand-lg" aria-label="Indice della pagina" data-bs-navscroll>
                                 <div class="navbar-custom" id="navbarNavProgress">
@@ -228,11 +240,13 @@ get_header();
                                                                     </a>
                                                                 </li>
                                                                 <?php } ?>
+                                                                <?php /* voce indice "Accedi al servizio" disattivata
                                                                 <li class="nav-item">
                                                                     <a class="nav-link" href="#submit-request">
                                                                         <span>Accedi al servizio</span>
                                                                     </a>
                                                                 </li>
+                                                                */ ?>
                                                                 <?php if ( $more_info ) { ?>
                                                                 <li class="nav-item">
                                                                     <a class="nav-link" href="#more-info">
@@ -264,30 +278,29 @@ get_header();
                                 </div>
                             </nav>
                         </div>
-                    </div>
-                    <div class="col-12 col-lg-8 offset-lg-1">
-                        <div class="it-page-sections-container">
+                    </aside>
+                    <section class="col-lg-8 it-page-sections-container border-light">
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="who-needs">A chi è rivolto</h2>
-                                <div class="richtext-wrapper lora" data-element="service-addressed">
+                                <div class="richtext-wrapper" data-element="service-addressed">
                                     <?php echo $destinatari ?>
                                 </div>
                             </section>
                             <?php if ($descrizione) { ?>
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="description">Descrizione</h2>
-                                <div class="richtext-wrapper lora" data-element="service-extended-description"><?php echo $descrizione ?></div>
+                                <div class="richtext-wrapper" data-element="service-extended-description"><?php echo $descrizione ?></div>
                             </section>
                             <?php } ?>
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="how-to">Come fare</h2>
-                                <div class="richtext-wrapper lora" data-element="service-how-to">
+                                <div class="richtext-wrapper" data-element="service-how-to">
                                     <?php echo $come_fare ?>
                                 </div>
                             </section>
                             <section class="it-page-section mb-30 has-bg-grey p-3">
                                 <h2 class="title-xxlarge mb-3" id="needed">Cosa serve</h2>
-                                <div class="richtext-wrapper lora" data-element="service-needed">
+                                <div class="richtext-wrapper" data-element="service-needed">
                                     <?php echo $cosa_serve_intro ?>
                                     <ul >
                                         <?php foreach ($cosa_serve_list as $cosa_serve_item) { ?>
@@ -298,13 +311,13 @@ get_header();
                             </section>
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="obtain">Cosa si ottiene</h2>
-                                <div class="richtext-wrapper lora" data-element="service-achieved"><?php echo $output ?></div>
+                                <div class="richtext-wrapper" data-element="service-achieved"><?php echo $output ?></div>
                             </section>
                             <?php if ( !empty($fasi_scadenze_intro) || (is_array($fasi_scadenze) && count($fasi_scadenze)) || (is_array($fasi_group_simple_scadenze) && count($fasi_group_simple_scadenze)) ) { ?>
                             <section class="it-page-section mb-30">
                                 <div class="cmp-timeline">
                                     <h2 class="title-xxlarge mb-3" id="deadlines">Tempi e scadenze</h2>
-                                    <div class="richtext-wrapper lora" data-element="service-calendar-text">
+                                    <div class="richtext-wrapper" data-element="service-calendar-text">
                                         <?php echo $fasi_scadenze_intro; ?>
                                     </div>
                                     <?php if ((is_array($fasi_group_simple_scadenze) && count($fasi_group_simple_scadenze)) || (is_array($fasi_scadenze) && count($fasi_scadenze))) { ?>
@@ -366,9 +379,11 @@ get_header();
                             <?php if ( $costi ) { ?>
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="costs">Quanto costa</h2>
-                                <div class="richtext-wrapper lora" data-element="service-cost"><?php echo $costi ?></div>
+                                <div class="richtext-wrapper" data-element="service-cost"><?php echo $costi ?></div>
                             </section>
                             <?php } ?>
+                            <?php // sezione "Accedi al servizio" disattivata
+                            if ( false ) : ?>
                             <section class="it-page-section mb-30 has-bg-grey p-4">
                                 <h2 class="mb-3" id="submit-request">Accedi al servizio</h2>
                                 <?php if ($canale_digitale_link) { ?>
@@ -378,15 +393,16 @@ get_header();
                                 </button>
                                 <?php } ?>
                                 <p class="text-paragraph lora mt-4" data-element="service-generic-access"><?php echo $canale_fisico_text; ?></p>
-                                <button type="button" class="btn btn-outline-primary t-primary bg-white mobile-full" onclick="location.href='<?php echo dci_get_template_page_url('page-templates/prenota-appuntamento.php'); ?>';" data-element="service-booking-access">
+                                <button type="button" class="btn btn-outline-primary t-primary bg-white mobile-full" onclick="location.href='<?php echo esc_url( $prenota_appuntamento_url ); ?>';" data-element="service-booking-access">
                                     <span class="">Prenota appuntamento</span>
                                 </button>
                             </section>
+                            <?php endif; ?>
                             <?php if ( $more_info ) {  ?>
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="more-info">Ulteriori informazioni</h2>
                                 <h3 class="mb-3 subtitle-medium">Graduatorie di accesso</h3>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php echo $more_info ?>
                                 </div>
                             </section>
@@ -396,7 +412,7 @@ get_header();
                             ?>
                             <section class="it-page-section mb-30">
                                 <h2 class="title-xxlarge mb-3" id="conditions">Condizioni di servizio</h2>
-                                <div class="richtext-wrapper lora">Per conoscere i dettagli di
+                                <div class="richtext-wrapper">Per conoscere i dettagli di
                                     scadenze, requisiti e altre informazioni importanti, leggi i termini e le condizioni di servizio.
                                 </div>
                                 <?php get_template_part("template-parts/single/attachment"); ?>
@@ -417,7 +433,7 @@ get_header();
                                     <div class="col-12 mb-30">
                                         <span class="text-paragraph-small">Argomenti:</span>
                                         <ul class="d-flex flex-wrap gap-2 mt-10 mb-30">
-                                            <?php foreach ( $argomenti as $item ) { ?>
+                                            <?php foreach ( $argomenti as $item ) : ?>
                                                 <li>
                                                     <a href="<?php echo get_term_link($item); ?>" class="chip chip-simple" data-element="service-topic">
                                                         <span class="chip-label">
@@ -425,17 +441,15 @@ get_header();
                                                         </span>
                                                     </a>
                                                 </li>
-                                            <?php } ?>
+                                            <?php endforeach; ?>
                                         </ul>
                                         <?php get_template_part('template-parts/single/page_bottom',"simple"); ?>
                                     </div>
                                 </div>
                             </section>
-                        </div>
-                    </div>
+                    </section>
                 </div>
             </div>
-        </div>
         <?php get_template_part("template-parts/common/valuta-servizio"); ?>
         <?php get_template_part('template-parts/single/more-posts', 'carousel'); ?>
         <?php get_template_part("template-parts/common/assistenza-contatti"); ?>

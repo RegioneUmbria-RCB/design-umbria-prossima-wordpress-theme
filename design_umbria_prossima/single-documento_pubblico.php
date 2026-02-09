@@ -235,7 +235,7 @@ get_header();
                             <?php if( $descrizione) { ?>
                             <section id="descrizione" class="it-page-section mb-5">
                                 <h4>Descrizione</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php echo $descrizione; ?>
 							                  </div>
                             </section>
@@ -308,7 +308,7 @@ get_header();
                             <?php if ($formati) { ?>
                             <section id="formati_disponibili" class="it-page-section mb-5">
                                 <h4>Formati disponibili</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php echo $formati ?>		
                                 </div>
                             </section>
@@ -317,7 +317,7 @@ get_header();
                             <?php if ($licenza) { ?>
                             <section id="licenza_distribuzione" class="it-page-section mb-5">
                                 <h4>Licenza distribuzione</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php foreach($licenza as $tipo) { 
                                         echo $tipo->name;
                                     } ?>
@@ -343,7 +343,7 @@ get_header();
                             <?php if ($data_inizio) { ?>
                             <section id="data_inizio" class="it-page-section mb-5">
                                 <h4>Data inizio</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php
                                         echo date_i18n('j F Y', strtotime($data_inizio));
                                     ?>
@@ -354,7 +354,7 @@ get_header();
                             <?php if ($data_fine) { ?>
                             <section id="data_fine" class="it-page-section mb-5">
                                 <h4>Data fine</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php
                                         echo date_i18n('j F Y', strtotime($data_fine));
                                     ?>
@@ -365,7 +365,7 @@ get_header();
                             <?php if ( $more_info ) {  ?>
                             <section id="ulteriori_informazioni" class="it-page-section mb-5">
                                 <h4>Ulteriori informazioni</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php echo $more_info ?>
                                 </div>
                             </section>
@@ -374,7 +374,7 @@ get_header();
                             <?php if ( $riferimenti_normativi ) { ?>
                             <section id="riferimenti_normativi" class="it-page-section mb-5">
                                 <h4>Riferimenti normativi</h4>
-                                <div class="richtext-wrapper lora">
+                                <div class="richtext-wrapper">
                                     <?php echo $riferimenti_normativi ?>
                                 </div>
                             </section>

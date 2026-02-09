@@ -6,6 +6,19 @@ Version: 1.0
 
 @import url("inc/origin-tema-comuni/css/bootstrap-italia-fonts.css");
 
+/* Usa Titillium su tutte le single (servizi, notizie, ecc.) invece di Lora */
+main .it-page-sections-container .richtext-wrapper,
+main .it-page-section .richtext-wrapper,
+main .richtext-wrapper.lora,
+main .text-paragraph.lora,
+main .lora,
+.richtext-wrapper.lora,
+.text-paragraph.lora,
+.richtext-wrapper.font-serif,
+.font-serif {
+  font-family: "Titillium Web", sans-serif !important;
+}
+
 .form-check [type="checkbox"]:focus + label,
 .form-check [type="radio"]:focus + label,
 .toggles label input[type="checkbox"]:focus + .lever,
