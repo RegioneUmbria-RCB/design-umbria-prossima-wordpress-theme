@@ -103,9 +103,12 @@ if($show_content_list == 'on'){
                                     </nav>
                                 </div>
                                 <h1 class="text-white hero-title"><?php single_cat_title(); ?></h1>
-                                <div class="hero-text">
-                                    <p class="text-white"><?php if ( '' != get_the_archive_description() ) { echo get_the_archive_description(); } ?></p>
-                                </div>
+                                <p class="hero-text text-white" style="text-align: justify;"><?php
+                                    $cat_description = get_category_page_description( $current_cat );
+                                    if ( '' !== $cat_description ) {
+                                        echo esc_html( $cat_description );
+                                    }
+                                ?></p>
                             </div>
                         </div>
                     </section>

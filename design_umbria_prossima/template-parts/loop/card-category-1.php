@@ -4,7 +4,9 @@ if ( $args ) :
   $name      = $args->name;
   $external_link = get_term_meta( $term_id, 'external_link', true );
   $permalink = !empty($external_link)? $external_link : get_category_link($term_id);
-  $description = $args->description;
+  $description = ( is_object( $args ) && ! empty( $args->term_id ) && function_exists( 'get_category_page_description' ) )
+    ? get_category_page_description( $args )
+    : ( is_object( $args ) ? ( $args->description ?? '' ) : ( $args['description'] ?? '' ) );
 ?>
 <div class="card shadow-sm rounded border h-100">
   <div class="card-body">

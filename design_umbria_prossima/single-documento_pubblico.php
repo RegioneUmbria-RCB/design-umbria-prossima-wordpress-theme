@@ -67,12 +67,12 @@ get_header();
                 </div>
                 <div class="row">
                     <div class="col-lg-8 px-lg-4 py-lg-2">
-                        <h1><?php the_title(); ?></h1>
-                        <h2 class="visually-hidden">Dettagli del documento</h2>
+                        <h1 data-audio><?php the_title(); ?></h1>
+                        <h2 class="visually-hidden" data-audio>Dettagli del documento</h2>
                         <?php if($numero_protocollo) { ?>
-                            <h4>Protocollo <?= $numero_protocollo ?> del <?= $data_protocollo ?></h4>
+                            <h4 data-audio>Protocollo <?= $numero_protocollo ?> del <?= $data_protocollo ?></h4>
                         <?php } ?>
-                        <p>
+                        <p data-audio>
                             <?php echo $descrizione_breve; ?>
                         </p>
 
@@ -271,7 +271,7 @@ get_header();
                         <div class="it-page-sections-container">
                             <?php get_template_part('template-parts/single-page-components/image-large'); ?>
                             <?php if( $descrizione) { ?>
-                            <section id="descrizione" class="it-page-section mb-5">
+                            <section id="descrizione" class="it-page-section mb-5" data-audio>
                                 <h4>Descrizione</h4>
                                 <div class="richtext-wrapper">
                                     <?php echo $descrizione; ?>
@@ -285,7 +285,7 @@ get_header();
                                     $img_val = $p['immagine'] ?? '';
                                     $img_id = is_numeric( $img_val ) ? (int) $img_val : ( $img_val ? attachment_url_to_postid( $img_val ) : 0 );
                             ?>
-                            <section id="paragrafo-<?php echo (int) $idx; ?>" class="it-page-section mb-5">
+                            <section id="paragrafo-<?php echo (int) $idx; ?>" class="it-page-section mb-5" data-audio>
                                 <h4><?php echo esc_html( $titolo_paragrafo ); ?></h4>
                                 <div class="richtext-wrapper">
                                     <?php echo wp_kses_post( wpautop( $p['testo'] ?? '' ) ); ?>

@@ -49,6 +49,20 @@ function category_metabox() {
             'class' => 'category-conditional-field',
         ),
     ));
+
+    $cmb->add_field(array(
+        'name' => 'Descrizione',
+        'id'   => 'description_'.$category->term_id,
+        'type' => 'textarea',
+        'desc' => 'Testo mostrato sotto il titolo nella pagina di questa categoria. Se vuoto viene usata la descrizione della categoria.',
+        'attributes' => array(
+            'data-category' => $category->term_id,
+            'class' => 'category-conditional-field',
+        ),
+        'options' => array(
+            'textarea_rows' => 4,
+        ),
+    ));
     
     // Checkbox per ogni categoria
     $cmb->add_field(array(
