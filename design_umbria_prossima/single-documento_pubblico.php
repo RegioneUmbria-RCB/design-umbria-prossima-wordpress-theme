@@ -56,6 +56,8 @@ get_header();
             if ( ! is_array( $paragrafi_aggiuntivi ) ) {
                 $paragrafi_aggiuntivi = array();
             }
+            $dimensione_immagine = dci_get_meta("dimensione_immagine") ?: 'large';
+            set_query_var('custom_image_size', $dimensione_immagine);
             ?>
             <div class="container" id="main-container">
                 <div class="row">
@@ -294,11 +296,12 @@ get_header();
                                     if ( empty( $img_alt ) && $img_post ) {
                                         $img_alt = $img_post->post_excerpt ?: $img_post->post_title;
                                     }
+                                    $paragrafo_img_size = ! empty( $p['dimensione_immagine'] ) ? $p['dimensione_immagine'] : 'large';
                                     ?>
                                 <figure class="figure mt-3">
                                     <?php echo wp_get_attachment_image(
                                         $img_id,
-                                        'large',
+                                        $paragrafo_img_size,
                                         false,
                                         array(
                                             'class' => 'figure-img img-fluid rounded',

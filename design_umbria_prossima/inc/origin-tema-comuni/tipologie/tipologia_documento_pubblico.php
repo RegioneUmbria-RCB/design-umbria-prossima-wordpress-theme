@@ -114,6 +114,16 @@ function dci_add_documento_pubblico_metaboxes()
         )
     );
 
+    $cmb_apertura->add_field( array(
+            'id'      => $prefix . 'dimensione_immagine',
+            'name'    => __( 'Dimensione immagine', 'design_comuni_italia' ),
+            'desc'    => __( 'Dimensioni con cui mostrare l\'immagine nella pagina', 'design_comuni_italia' ),
+            'type'    => 'select',
+            'options' => dci_get_available_image_sizes_for_select(),
+            'default' => 'large',
+        )
+    );
+
     $cmb_apertura->add_field(array(
         'id' => $prefix . 'tipo_documento',
         'name' => __("Tipo di documento *", 'design_comuni_italia'),
@@ -275,6 +285,15 @@ function dci_add_documento_pubblico_metaboxes()
         'desc' => __('Immagine opzionale mostrata sotto il testo del paragrafo', 'design_comuni_italia'),
         'type' => 'file',
         'query_args' => array('type' => 'image'),
+    ));
+
+    $cmb_descrizione->add_group_field($paragrafi_group_id, array(
+        'id'      => 'dimensione_immagine',
+        'name'    => __('Dimensione immagine', 'design_comuni_italia'),
+        'desc'    => __('Dimensioni con cui mostrare l\'immagine', 'design_comuni_italia'),
+        'type'    => 'select',
+        'options' => dci_get_available_image_sizes_for_select(),
+        'default' => 'large',
     ));
 
     $cmb_descrizione->add_field(array(

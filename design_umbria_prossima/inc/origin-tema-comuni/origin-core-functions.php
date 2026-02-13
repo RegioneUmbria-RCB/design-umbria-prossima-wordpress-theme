@@ -179,6 +179,32 @@ if(!function_exists("dci_get_wysiwyg_field")) {
     }
 }
 
+/**
+ * Restituisce le dimensioni immagine disponibili per select/radio (slug => etichetta).
+ */
+if ( ! function_exists( 'dci_get_available_image_sizes_for_select' ) ) {
+	function dci_get_available_image_sizes_for_select() {
+		$labels = array(
+			'thumbnail'     => __( 'Miniatura', 'design_comuni_italia' ),
+			'medium'        => __( 'Media', 'design_comuni_italia' ),
+			'medium_large'  => __( 'Media grande', 'design_comuni_italia' ),
+			'large'         => __( 'Grande', 'design_comuni_italia' ),
+			'full'          => __( 'Originale', 'design_comuni_italia' ),
+			'du-small'      => __( 'DU Piccola (150×150)', 'design_comuni_italia' ),
+			'du-thumbnail'  => __( 'DU Miniatura (300×300)', 'design_comuni_italia' ),
+			'du-medium'     => __( 'DU Media (600×600)', 'design_comuni_italia' ),
+			'du-large'      => __( 'DU Grande (1200×1200)', 'design_comuni_italia' ),
+		);
+		$sizes   = get_intermediate_image_sizes();
+		$options = array();
+		foreach ( $sizes as $size ) {
+			$options[ $size ] = isset( $labels[ $size ] ) ? $labels[ $size ] : ucfirst( str_replace( array( '-', '_' ), ' ', $size ) );
+		}
+		$options['full'] = $labels['full'];
+		return $options;
+	}
+}
+
 function getFileSizeAndFormat($url) {
     $percorso = parse_url($url);
     $percorso = isset($percorso["path"]) ? substr($percorso["path"], 0, -strlen(pathinfo($url, PATHINFO_BASENAME))) : '';

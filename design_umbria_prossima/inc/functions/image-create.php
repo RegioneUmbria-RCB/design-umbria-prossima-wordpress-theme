@@ -23,6 +23,13 @@
             wp_mkdir_p($webp_base_dir);
         }
 
+        // WebP dell'immagine originale (full)
+        $ext = strtolower(pathinfo($metadata['file'], PATHINFO_EXTENSION));
+        if (in_array($ext, array('jpg', 'jpeg', 'png', 'gif'), true)) {
+            $orig_webp_path = $webp_base_dir . '/' . pathinfo($metadata['file'], PATHINFO_FILENAME) . '.webp';
+            convert_to_webp($original_file_path, $orig_webp_path);
+        }
+
         $additional_sizes = wp_get_additional_image_sizes();
         foreach ($additional_sizes as $size_name => $size_attrs) {
             $w = isset($size_attrs['width']) ? (int) $size_attrs['width'] : 0;
