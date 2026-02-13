@@ -1,4 +1,19 @@
 <?php
+/**
+ * Importa strutture dati dallo zip design-umbria-prossima (sempre scaricato da GitHub).
+ * Lo zip design-umbria-prossima-wordpress-theme-main ha struttura:
+ *   design-umbria-prossima-wordpress-theme-main/
+ *   └── design_umbria_prossima/
+ *       └── inc/origin-tema-comuni/
+ *           ├── tipologie/
+ *           ├── tassonomie/
+ *           ├── options/
+ *           ├── comuni_tipologie.json
+ *           └── comuni_pagine.json
+ */
+define('ORIGIN_ZIP_ROOT', 'design-umbria-prossima-wordpress-theme-main/design_umbria_prossima');
+define('ORIGIN_ZIP_URL', 'https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme/archive/refs/heads/main.zip');
+
 // 1. Aggiungi il sottomenu in Strumenti
 add_action('admin_menu', function () {
     add_submenu_page(
@@ -15,7 +30,7 @@ add_action('admin_menu', function () {
 function pagina_import_sezioni() {
     ?>
     <div class="wrap">
-        <h1>Importa strutture dati dal tema comuni Design Italia</h1>
+        <h1>Importa strutture dati dal tema design-umbria-prossima</h1>
         <p>Premi il pulsante per aggiornare: <strong>Tipologie</strong>, <strong>Tassonomie</strong> e <strong>Options</strong>.</p>
         
         <button id="importa-sezioni" class="button button-primary">Aggiorna strutture dati</button>
@@ -64,21 +79,35 @@ add_action('wp_ajax_importa_tutte_le_sezioni', 'importa_strutture_dati_tema');
 // 4. Funzione principale di importazione (riutilizzata anche all'attivazione del tema)
 function importa_strutture_dati_tema() {
     $errors = [];
+    if (!function_exists('download_url')) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+    }
+    $zip_path = download_url(ORIGIN_ZIP_URL);
+    if (is_wp_error($zip_path)) {
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            wp_send_json_error('Download fallito: ' . $zip_path->get_error_message());
+        }
+        return;
+    }
 
-    $result1 = importa_cartella_da_github('/inc/admin/tipologie', '/inc/origin-tema-comuni/tipologie');
+    $result1 = importa_cartella_da_zip($zip_path, '/inc/origin-tema-comuni/tipologie', '/inc/origin-tema-comuni/tipologie');
     if ($result1 !== true) $errors[] = "Tipologie: $result1";
 
-    $result2 = importa_cartella_da_github('/inc/admin/tassonomie', '/inc/origin-tema-comuni/tassonomie');
+    $result2 = importa_cartella_da_zip($zip_path, '/inc/origin-tema-comuni/tassonomie', '/inc/origin-tema-comuni/tassonomie');
     if ($result2 !== true) $errors[] = "Tassonomie: $result2";
 
-    $result3 = importa_cartella_da_github('/inc/admin/options', '/inc/origin-tema-comuni/options');
+    $result3 = importa_cartella_da_zip($zip_path, '/inc/origin-tema-comuni/options', '/inc/origin-tema-comuni/options');
     if ($result3 !== true) $errors[] = "Options: $result3";
 
-    $result4 = importa_file_da_github('/inc/comuni_tipologie.json', '/inc/origin-tema-comuni/comuni_tipologie.json');
+    $result4 = importa_file_da_zip($zip_path, '/inc/origin-tema-comuni/comuni_tipologie.json', '/inc/origin-tema-comuni/comuni_tipologie.json');
     if ($result4 !== true) $errors[] = "comuni_tipologie.json: $result4";
 
-    $result5 = importa_file_da_github('/inc/comuni_pagine.json', '/inc/origin-tema-comuni/comuni_pagine.json');
+    $result5 = importa_file_da_zip($zip_path, '/inc/origin-tema-comuni/comuni_pagine.json', '/inc/origin-tema-comuni/comuni_pagine.json');
     if ($result5 !== true) $errors[] = "comuni_pagine.json: $result5";
+
+    if (file_exists($zip_path)) {
+        unlink($zip_path);
+    }
 
     if (defined('DOING_AJAX') && DOING_AJAX) {
         if (empty($errors)) {
@@ -95,35 +124,25 @@ function importa_strutture_dati_tema() {
     }
 }
 
-// 5. Funzioni di supporto: importazione cartelle e file
-function importa_cartella_da_github($subfolder_path, $local_target) {
-    if (!function_exists('download_url')) {
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-    }
-    $zip_url = 'https://github.com/italia/design-comuni-wordpress-theme/archive/refs/heads/main.zip';
-    $temp_file = download_url($zip_url);
-
-    if (is_wp_error($temp_file)) {
-        return 'Download fallito: ' . $temp_file->get_error_message();
-    }
-
+// 5. Funzioni di supporto: importazione cartelle e file dallo zip design-umbria-prossima
+function importa_cartella_da_zip($zip_path, $path_in_zip, $local_target) {
     $tmp_dir = wp_tempnam();
     unlink($tmp_dir);
     mkdir($tmp_dir);
 
     $zip = new ZipArchive;
-    if ($zip->open($temp_file) === TRUE) {
-        $zip->extractTo($tmp_dir);
-        $zip->close();
-    } else {
+    if ($zip->open($zip_path) !== TRUE) {
         return 'Impossibile aprire lo zip';
     }
 
-    $extracted_path = $tmp_dir . '/design-comuni-wordpress-theme-main' . $subfolder_path;
+    $zip->extractTo($tmp_dir);
+    $zip->close();
+
+    $extracted_path = $tmp_dir . '/' . ORIGIN_ZIP_ROOT . $path_in_zip;
     $destination = get_template_directory() . $local_target;
 
     if (!is_dir($extracted_path)) {
-        return 'Cartella non trovata: ' . $subfolder_path;
+        return 'Cartella non trovata: ' . $path_in_zip;
     }
 
     if (!file_exists($destination)) {
@@ -131,34 +150,23 @@ function importa_cartella_da_github($subfolder_path, $local_target) {
     }
 
     copia_cartella($extracted_path, $destination);
-    unlink($temp_file);
     return true;
 }
 
-function importa_file_da_github($file_path_in_zip, $local_target) {
-    if (!function_exists('download_url')) {
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-    }
-    $zip_url = 'https://github.com/italia/design-comuni-wordpress-theme/archive/refs/heads/main.zip';
-    $temp_file = download_url($zip_url);
-
-    if (is_wp_error($temp_file)) {
-        return 'Download fallito: ' . $temp_file->get_error_message();
-    }
-
+function importa_file_da_zip($zip_path, $file_path_in_zip, $local_target) {
     $tmp_dir = wp_tempnam();
     unlink($tmp_dir);
     mkdir($tmp_dir);
 
     $zip = new ZipArchive;
-    if ($zip->open($temp_file) === TRUE) {
-        $zip->extractTo($tmp_dir);
-        $zip->close();
-    } else {
+    if ($zip->open($zip_path) !== TRUE) {
         return 'Impossibile aprire lo zip';
     }
 
-    $extracted_file_path = $tmp_dir . '/design-comuni-wordpress-theme-main' . $file_path_in_zip;
+    $zip->extractTo($tmp_dir);
+    $zip->close();
+
+    $extracted_file_path = $tmp_dir . '/' . ORIGIN_ZIP_ROOT . $file_path_in_zip;
     $destination = get_template_directory() . $local_target;
 
     if (!file_exists($extracted_file_path)) {
@@ -174,7 +182,6 @@ function importa_file_da_github($file_path_in_zip, $local_target) {
         return 'Copia del file fallita.';
     }
 
-    unlink($temp_file);
     return true;
 }
 

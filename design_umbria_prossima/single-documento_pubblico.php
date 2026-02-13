@@ -25,7 +25,14 @@ get_header();
             $tipo_documento = wp_get_post_terms( $post->ID, array( 'tipi_documento', 'tipi_doc_albo_pretorio' ) );
             $descrizione_breve = dci_get_meta("descrizione_breve");
             $url_documento = dci_get_meta("url_documento");
-            $file_documento = dci_get_meta("file_documento");
+            $file_documento_raw = dci_get_meta("file_documento");
+            // Normalizza a array: retrocompat con allegato singolo (string) e nuovo file_list (array)
+            $file_documento = array();
+            if (is_array($file_documento_raw) && count($file_documento_raw)) {
+                $file_documento = array_values($file_documento_raw);
+            } elseif (is_string($file_documento_raw) && $file_documento_raw) {
+                $file_documento = array($file_documento_raw);
+            }
             $descrizione = dci_get_wysiwyg_field("descrizione_estesa");
             $ufficio_responsabile = dci_get_meta("ufficio_responsabile");
             $autori = dci_get_meta("autori");
@@ -129,7 +136,7 @@ get_header();
                                                                 </li>
                                                                 <?php } ?>
 
-                                                                <?php if( $url_documento || $file_documento ) { ?>
+                                                                <?php if( $url_documento || count($file_documento) ) { ?>
                                                                 <li class="nav-item">
                                                                     <a class="nav-link" href="#documento">
                                                                         <span>Documento</span>
@@ -241,28 +248,28 @@ get_header();
                             </section>
                             <?php } ?>
 
-                            <?php if( $url_documento || $file_documento ) { ?>
+                            <?php if( $url_documento || count($file_documento) ) { ?>
                             <section id="documento" class="it-page-section mb-5">
                                 <h4>Documento</h4>
                                 <div class="card-wrapper card-teaser-wrapper card-teaser-wrapper-equal">
                                 <?php
-                                    if ( $file_documento ) {
-                                        $documento_id = attachment_url_to_postid($file_documento);
+                                    foreach ( $file_documento as $file_url ) {
+                                        $documento_id = attachment_url_to_postid($file_url);
                                         $documento = get_post($documento_id);
-                                        ?>
+                                        if ( $documento ) { ?>
                                         <div class="card card-teaser shadow-sm p-4 mt-3 rounded border border-light flex-nowrap">
                                             <svg class="icon" aria-hidden="true">
                                                 <use href="<?php echo get_template_directory_uri(); ?>/inc/origin-tema-comuni/bootstrap-italia/svg/sprites.svg#it-clip"></use>
                                             </svg>
                                             <div class="card-body">
                                                 <h5 class="card-title">
-                                                    <a class="text-decoration-none" href="<?php echo $file_documento; ?>" aria-label="Scarica il documento <?php echo $documento->post_title; ?>" title="Scarica il documento <?php echo $documento->post_title; ?>">
-                                                        <?php echo $documento->post_title; ?> (<?php echo getFileSizeAndFormat($file_documento);?>)
+                                                    <a class="text-decoration-none" href="<?php echo esc_url($file_url); ?>" aria-label="Scarica il documento <?php echo esc_attr($documento->post_title); ?>" title="Scarica il documento <?php echo esc_attr($documento->post_title); ?>">
+                                                        <?php echo esc_html($documento->post_title); ?> (<?php echo getFileSizeAndFormat($file_url);?>)
                                                     </a>
                                                 </h5>
                                             </div>
                                         </div>
-                                    <?php }
+                                    <?php } }
 
                                     if ( $url_documento ) { ?>
                                         <div class="card card-teaser shadow-sm p-4 mt-3 rounded border border-light flex-nowrap">
