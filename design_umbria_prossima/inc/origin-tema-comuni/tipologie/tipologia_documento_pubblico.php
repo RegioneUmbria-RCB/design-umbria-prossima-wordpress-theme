@@ -168,10 +168,10 @@ function dci_add_documento_pubblico_metaboxes()
         ),
     ));
 
-    //DOCUMENTO
+    //DOCUMENTO (opzionale)
     $cmb_documento = new_cmb2_box(array(
         'id' => $prefix . 'box_documento',
-        'title' => __('Documento *', 'design_comuni_italia'),
+        'title' => __('Documento', 'design_comuni_italia'),
         'object_types' => array('documento_pubblico'),
         'context' => 'normal',
         'priority' => 'high',
@@ -187,7 +187,28 @@ function dci_add_documento_pubblico_metaboxes()
     $cmb_documento->add_field(array(
         'id' => $prefix . 'file_documento',
         'name' => __('Documento: Carica file', 'design_comuni_italia'),
-        'desc' => __('Se non è presente un link a risorsa esterna, bisogna ricordarsi di allegare il documento vero e proprio, in un formato scaricabile e stampabile da parte dell\'utente. È possibile aggiungere più allegati.', 'design_comuni_italia'),
+        'desc' => __('Se non è presente un link a risorsa esterna, è possibile caricare il documento in un formato scaricabile e stampabile. È possibile aggiungere più file.', 'design_comuni_italia'),
+        'type' => 'file_list',
+        'text' => array(
+            'add_upload_files_text' => __('Aggiungi un nuovo file', 'design_comuni_italia'),
+            'remove_image_text' => __('Rimuovi file', 'design_comuni_italia'),
+            'remove_text' => __('Rimuovi', 'design_comuni_italia'),
+        ),
+    ));
+
+    //ALLEGATI (opzionale, multipli come documento)
+    $cmb_allegati = new_cmb2_box(array(
+        'id' => $prefix . 'box_allegati',
+        'title' => __('Allegati', 'design_comuni_italia'),
+        'object_types' => array('documento_pubblico'),
+        'context' => 'normal',
+        'priority' => 'high',
+    ));
+
+    $cmb_allegati->add_field(array(
+        'id' => $prefix . 'allegati',
+        'name' => __('Allegati: Carica file', 'design_comuni_italia'),
+        'desc' => __('File aggiuntivi in allegato al documento, in formato scaricabile e stampabile. È possibile aggiungere più allegati.', 'design_comuni_italia'),
         'type' => 'file_list',
         'text' => array(
             'add_upload_files_text' => __('Aggiungi un nuovo allegato', 'design_comuni_italia'),
@@ -195,7 +216,6 @@ function dci_add_documento_pubblico_metaboxes()
             'remove_text' => __('Rimuovi', 'design_comuni_italia'),
         ),
     ));
-
 
     //DESCRIZIONE
     $cmb_descrizione = new_cmb2_box(array(

@@ -26,12 +26,19 @@ get_header();
             $descrizione_breve = dci_get_meta("descrizione_breve");
             $url_documento = dci_get_meta("url_documento");
             $file_documento_raw = dci_get_meta("file_documento");
-            // Normalizza a array: retrocompat con allegato singolo (string) e nuovo file_list (array)
+            $allegati_raw = dci_get_meta("allegati");
+            // Normalizza a array: retrocompat con allegato singolo (string) e file_list (array)
             $file_documento = array();
             if (is_array($file_documento_raw) && count($file_documento_raw)) {
                 $file_documento = array_values($file_documento_raw);
             } elseif (is_string($file_documento_raw) && $file_documento_raw) {
                 $file_documento = array($file_documento_raw);
+            }
+            $allegati = array();
+            if (is_array($allegati_raw) && count($allegati_raw)) {
+                $allegati = array_values($allegati_raw);
+            } elseif (is_string($allegati_raw) && $allegati_raw) {
+                $allegati = array($allegati_raw);
             }
             $descrizione = dci_get_wysiwyg_field("descrizione_estesa");
             $ufficio_responsabile = dci_get_meta("ufficio_responsabile");
@@ -140,6 +147,14 @@ get_header();
                                                                 <li class="nav-item">
                                                                     <a class="nav-link" href="#documento">
                                                                         <span>Documento</span>
+                                                                    </a>
+                                                                </li>
+                                                                <?php } ?>
+
+                                                                <?php if( count($allegati) ) { ?>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#allegati">
+                                                                        <span>Allegati</span>
                                                                     </a>
                                                                 </li>
                                                                 <?php } ?>
@@ -286,6 +301,31 @@ get_header();
                                         </div>
                                     <?php } ?>
                                 </div><!-- ./card-wrapper -->
+                            </section>
+                            <?php } ?>
+
+                            <?php if( count($allegati) ) { ?>
+                            <section id="allegati" class="it-page-section mb-5">
+                                <h4>Allegati</h4>
+                                <div class="card-wrapper card-teaser-wrapper card-teaser-wrapper-equal">
+                                <?php foreach ( $allegati as $file_url ) {
+                                    $doc_id = attachment_url_to_postid($file_url);
+                                    $doc = get_post($doc_id);
+                                    if ( $doc ) { ?>
+                                    <div class="card card-teaser shadow-sm p-4 mt-3 rounded border border-light flex-nowrap">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use href="<?php echo get_template_directory_uri(); ?>/inc/origin-tema-comuni/bootstrap-italia/svg/sprites.svg#it-clip"></use>
+                                        </svg>
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a class="text-decoration-none" href="<?php echo esc_url($file_url); ?>" aria-label="Scarica l'allegato <?php echo esc_attr($doc->post_title); ?>" title="Scarica l'allegato <?php echo esc_attr($doc->post_title); ?>">
+                                                    <?php echo esc_html($doc->post_title); ?> (<?php echo getFileSizeAndFormat($file_url);?>)
+                                                </a>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                <?php } } ?>
+                                </div>
                             </section>
                             <?php } ?>
 
