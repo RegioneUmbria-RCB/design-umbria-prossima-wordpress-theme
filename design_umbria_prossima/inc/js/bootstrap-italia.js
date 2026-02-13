@@ -5238,6 +5238,7 @@
         (this._isCollapseOpened = !1),
         (this._callbackQueue = []),
         (this._scrollCb = null),
+        (this._resizeObserver = null),
         this._bindEvents();
     }
     static get NAME() {
@@ -5247,7 +5248,11 @@
       this._config.scrollPadding = e;
     }
     dispose() {
-      this._scrollCb && this._scrollCb.dispose(), super.dispose();
+      this._scrollCb && this._scrollCb.dispose(),
+        this._resizeObserver &&
+          this._sectionContainer &&
+          this._resizeObserver.unobserve(this._sectionContainer),
+        super.dispose();
     }
     _getConfig(e) {
       return (e = {
@@ -5281,7 +5286,17 @@
         ),
         EventHandler$1.on(window, "load", () => {
           setTimeout(() => this._onScroll(), 150);
+          setTimeout(() => this._onScroll(), 500);
+          setTimeout(() => this._onScroll(), 1200);
         });
+        if (
+          this._sectionContainer &&
+          typeof ResizeObserver !== "undefined"
+        ) {
+          const ro = new ResizeObserver(() => this._onScroll());
+          ro.observe(this._sectionContainer);
+          this._resizeObserver = ro;
+        }
     }
     _onCollapseOpened() {
       this._isCollapseOpened = !0;
@@ -5321,14 +5336,20 @@
     }
     _scrollToHash(e) {
       const t = SelectorEngine$1.findOne(e, this._sectionContainer);
-      t &&
-        (documentScrollTo(t.offsetTop - this._getScrollPadding(), {
+      if (t) {
+        const scrollOffset = Math.max(this._getScrollPadding(), 120);
+        const top =
+          t.getBoundingClientRect().top +
+          (window.pageYOffset || document.documentElement.scrollTop);
+        documentScrollTo(top - scrollOffset, {
           duration: this._config.duration,
           easing: this._config.easing,
-        }),
+          complete: () => setTimeout(() => this._onScroll(), 0),
+        });
         history.pushState
           ? history.pushState(null, null, e)
-          : (location.hash = e));
+          : (location.hash = e);
+      }
     }
     _updateProgress(e) {
       if (!e) return;
