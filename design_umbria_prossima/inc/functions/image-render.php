@@ -92,4 +92,3 @@ function generate_webp_srcset($attachment_id) {
 }
 
 ?>
-
