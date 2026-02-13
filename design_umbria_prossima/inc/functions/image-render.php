@@ -1,6 +1,10 @@
 <?php
 
 function modify_image_src($attr, $attachment, $size) {
+    // In admin non applicare modifiche: mantieni l'anteprima CMB2/Media Library corretta
+    if (is_admin()) {
+        return $attr;
+    }
     // Controlla che l'attr e l'attachment siano validi
     if (isset($attr['src']) && is_string($attr['src'])) {
         $new_src = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $attr['src']);
@@ -19,17 +23,16 @@ function modify_image_src($attr, $attachment, $size) {
             $attr['src'] = $new_src;
         }
 
-        if(str_contains($attr['style'], "max-height") || str_contains($attr['style'], "max-width")){
-            $attr['style'] = $attr['style'].'object-fit:contain; width:auto;';
+        $style = $attr['style'] ?? '';
+        if (str_contains($style, 'max-height') || str_contains($style, 'max-width')) {
+            $attr['style'] = $style . 'object-fit:contain; width:auto;';
+        } else {
+            $attr['style'] = $style . 'object-fit:cover;';
         }
-        else{
-            $attr['style'] = $attr['style'].'object-fit:cover;';
-        }
-       
 
         // Imposta il punto focale, se esistono dati
         if (isset($axes) && is_array($axes)) {
-            $attr['style'] = $attr['style'].'object-position:' . $axes['x'] . '% ' . $axes['y'] . '%;';
+            $attr['style'] = $attr['style'] . 'object-position:' . $axes['x'] . '% ' . $axes['y'] . '%;';
         }
     }
 
