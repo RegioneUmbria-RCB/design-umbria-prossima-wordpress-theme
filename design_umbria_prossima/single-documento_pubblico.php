@@ -288,7 +288,7 @@ get_header();
                             <section id="paragrafo-<?php echo (int) $idx; ?>" class="it-page-section mb-5">
                                 <h4><?php echo esc_html( $titolo_paragrafo ); ?></h4>
                                 <div class="richtext-wrapper">
-                                    <?php echo wp_kses_post( $p['testo'] ?? '' ); ?>
+                                    <?php echo wp_kses_post( wpautop( $p['testo'] ?? '' ) ); ?>
                                 </div>
                                 <?php if ( $img_id ) {
                                     $img_post = get_post( $img_id );

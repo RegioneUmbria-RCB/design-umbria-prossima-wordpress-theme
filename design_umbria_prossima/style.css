@@ -19,6 +19,35 @@ main .lora,
   font-family: "Titillium Web", sans-serif !important;
 }
 
+/* Forza lo stesso font sui discendenti (override stili inline da editor) */
+main .it-page-section .richtext-wrapper,
+main .it-page-section .richtext-wrapper * {
+  font-family: "Titillium Web", sans-serif !important;
+}
+
+/* Tipografia uniforme: descrizione e paragrafi documento pubblico */
+main .it-page-section .richtext-wrapper {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+main .it-page-section .richtext-wrapper p {
+  margin-bottom: 1rem;
+}
+main .it-page-section .richtext-wrapper p:last-child {
+  margin-bottom: 0;
+}
+main .it-page-section .richtext-wrapper p + p {
+  margin-top: 0;
+}
+main .it-page-section .richtext-wrapper ul,
+main .it-page-section .richtext-wrapper ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+main .it-page-section .richtext-wrapper li {
+  margin-bottom: 0.5rem;
+}
+
 .form-check [type="checkbox"]:focus + label,
 .form-check [type="radio"]:focus + label,
 .toggles label input[type="checkbox"]:focus + .lever,
