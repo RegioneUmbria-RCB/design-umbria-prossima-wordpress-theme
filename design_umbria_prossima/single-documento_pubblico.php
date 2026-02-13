@@ -148,7 +148,7 @@ get_header();
                                                                 <?php } ?>
 
                                                                 <?php foreach ( $paragrafi_aggiuntivi as $idx => $p ) {
-                                                                    if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) ) { ?>
+                                                                    if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) || ! empty( $p['immagine'] ) ) { ?>
                                                                 <li class="nav-item">
                                                                     <a class="nav-link" href="#paragrafo-<?php echo (int) $idx; ?>">
                                                                         <span><?php echo esc_html( ! empty( $p['titolo'] ) ? $p['titolo'] : 'Paragrafo ' . ( $idx + 1 ) ); ?></span>
@@ -278,14 +278,38 @@ get_header();
                             <?php } ?>
 
                             <?php foreach ( $paragrafi_aggiuntivi as $idx => $p ) {
-                                if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) ) {
+                                if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) || ! empty( $p['immagine'] ) ) {
                                     $titolo_paragrafo = ! empty( $p['titolo'] ) ? $p['titolo'] : 'Paragrafo ' . ( $idx + 1 );
+                                    $img_val = $p['immagine'] ?? '';
+                                    $img_id = is_numeric( $img_val ) ? (int) $img_val : ( $img_val ? attachment_url_to_postid( $img_val ) : 0 );
                             ?>
                             <section id="paragrafo-<?php echo (int) $idx; ?>" class="it-page-section mb-5">
                                 <h4><?php echo esc_html( $titolo_paragrafo ); ?></h4>
                                 <div class="richtext-wrapper">
                                     <?php echo wp_kses_post( $p['testo'] ?? '' ); ?>
                                 </div>
+                                <?php if ( $img_id ) {
+                                    $img_post = get_post( $img_id );
+                                    $img_alt = get_post_meta( $img_id, '_wp_attachment_image_alt', true );
+                                    if ( empty( $img_alt ) && $img_post ) {
+                                        $img_alt = $img_post->post_excerpt ?: $img_post->post_title;
+                                    }
+                                    ?>
+                                <figure class="figure mt-3">
+                                    <?php echo wp_get_attachment_image(
+                                        $img_id,
+                                        'large',
+                                        false,
+                                        array(
+                                            'class' => 'figure-img img-fluid rounded',
+                                            'alt'   => esc_attr( $img_alt ),
+                                        )
+                                    ); ?>
+                                    <?php if ( ! empty( $img_post->post_excerpt ) ) : ?>
+                                    <figcaption class="figure-caption mt-2"><?php echo esc_html( $img_post->post_excerpt ); ?></figcaption>
+                                    <?php endif; ?>
+                                </figure>
+                                <?php } ?>
                             </section>
                             <?php }
                             } ?>

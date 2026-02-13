@@ -269,6 +269,14 @@ function dci_add_documento_pubblico_metaboxes()
         ),
     ));
 
+    $cmb_descrizione->add_group_field($paragrafi_group_id, array(
+        'id' => 'immagine',
+        'name' => __('Immagine', 'design_comuni_italia'),
+        'desc' => __('Immagine opzionale mostrata sotto il testo del paragrafo', 'design_comuni_italia'),
+        'type' => 'file',
+        'query_args' => array('type' => 'image'),
+    ));
+
     $cmb_descrizione->add_field(array(
         'id' => $prefix . 'gallery',
         'name' => __('Galleria', 'design_comuni_italia'),
