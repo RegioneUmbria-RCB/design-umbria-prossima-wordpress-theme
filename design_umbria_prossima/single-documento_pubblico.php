@@ -297,17 +297,26 @@ get_header();
                                         $img_alt = $img_post->post_excerpt ?: $img_post->post_title;
                                     }
                                     $paragrafo_img_size = ! empty( $p['dimensione_immagine'] ) ? $p['dimensione_immagine'] : 'large';
-                                    ?>
-                                <figure class="figure mt-3">
-                                    <?php echo wp_get_attachment_image(
+                                    $full_url = wp_get_attachment_url( $img_id );
+                                    $paragrafo_img = wp_get_attachment_image(
                                         $img_id,
                                         $paragrafo_img_size,
                                         false,
                                         array(
                                             'class' => 'figure-img img-fluid rounded',
                                             'alt'   => esc_attr( $img_alt ),
+                                            'style' => $full_url ? 'cursor:pointer;' : '',
                                         )
-                                    ); ?>
+                                    );
+                                    ?>
+                                <figure class="figure mt-3">
+                                    <?php if ( $full_url ) : ?>
+                                    <a href="<?php echo esc_url( $full_url ); ?>" target="_blank" rel="noopener noreferrer" class="d-block" aria-label="<?php echo esc_attr__( 'Apri immagine a dimensione intera', 'design_comuni_italia' ); ?>">
+                                        <?php echo $paragrafo_img; ?>
+                                    </a>
+                                    <?php else : ?>
+                                        <?php echo $paragrafo_img; ?>
+                                    <?php endif; ?>
                                     <?php if ( ! empty( $img_post->post_excerpt ) ) : ?>
                                     <figcaption class="figure-caption mt-2"><?php echo esc_html( $img_post->post_excerpt ); ?></figcaption>
                                     <?php endif; ?>

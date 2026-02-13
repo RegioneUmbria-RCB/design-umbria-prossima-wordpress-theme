@@ -105,12 +105,12 @@ function dci_add_documento_pubblico_metaboxes()
     ));
 
     $cmb_apertura->add_field( array(
-            'name'       => __('Immagine', 'design_comuni_italia' ),
-            'desc' => __( 'Immagine di riferimento del documento' , 'design_comuni_italia' ),
-            'id'             => $prefix . 'immagine',
-            'type' => 'file',
-            // 'preview_size' => array( 100, 100 ), // Default: array( 50, 50 )
-            'query_args' => array( 'type' => 'image' ), // Only images attachment
+            'name'         => __('Immagine', 'design_comuni_italia' ),
+            'desc'         => __( 'Immagine di riferimento del documento' , 'design_comuni_italia' ),
+            'id'           => $prefix . 'immagine',
+            'type'         => 'file',
+            'preview_size' => array( 150, 150 ),
+            'query_args'   => array( 'type' => 'image' ), // Only images attachment
         )
     );
 
@@ -280,11 +280,12 @@ function dci_add_documento_pubblico_metaboxes()
     ));
 
     $cmb_descrizione->add_group_field($paragrafi_group_id, array(
-        'id' => 'immagine',
-        'name' => __('Immagine', 'design_comuni_italia'),
-        'desc' => __('Immagine opzionale mostrata sotto il testo del paragrafo', 'design_comuni_italia'),
-        'type' => 'file',
-        'query_args' => array('type' => 'image'),
+        'id'           => 'immagine',
+        'name'         => __('Immagine', 'design_comuni_italia'),
+        'desc'         => __('Immagine opzionale mostrata sotto il testo del paragrafo', 'design_comuni_italia'),
+        'type'         => 'file',
+        'preview_size' => array( 150, 150 ),
+        'query_args'   => array('type' => 'image'),
     ));
 
     $cmb_descrizione->add_group_field($paragrafi_group_id, array(
