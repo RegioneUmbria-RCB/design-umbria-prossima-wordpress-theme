@@ -417,6 +417,45 @@ function dci_add_documento_pubblico_metaboxes()
         ),
     ));
 
+    // PARAGRAFI AGGIUNTIVI (ripetibili, titolo + testo, visibili nel menu laterale)
+    $cmb_paragrafi = new_cmb2_box(array(
+        'id' => $prefix . 'box_paragrafi',
+        'title' => __('Paragrafi aggiuntivi', 'design_comuni_italia'),
+        'object_types' => array('documento_pubblico'),
+        'context' => 'normal',
+        'priority' => 'high',
+    ));
+
+    $paragrafi_group_id = $cmb_paragrafi->add_field(array(
+        'id' => $prefix . 'paragrafi_aggiuntivi',
+        'type' => 'group',
+        'description' => __('Aggiungi paragrafi con titolo e testo. Ogni paragrafo apparirà come sezione nella pagina e nel menu laterale.', 'design_comuni_italia'),
+        'options' => array(
+            'group_title' => __('Paragrafo {#}', 'design_comuni_italia'),
+            'add_button' => __('Aggiungi paragrafo', 'design_comuni_italia'),
+            'remove_button' => __('Rimuovi paragrafo', 'design_comuni_italia'),
+            'sortable' => true,
+        ),
+    ));
+
+    $cmb_paragrafi->add_group_field($paragrafi_group_id, array(
+        'id' => 'titolo',
+        'name' => __('Titolo', 'design_comuni_italia'),
+        'desc' => __('Titolo del paragrafo (usato anche nel menu laterale)', 'design_comuni_italia'),
+        'type' => 'text',
+    ));
+
+    $cmb_paragrafi->add_group_field($paragrafi_group_id, array(
+        'id' => 'testo',
+        'name' => __('Testo', 'design_comuni_italia'),
+        'type' => 'wysiwyg',
+        'options' => array(
+            'media_buttons' => false,
+            'textarea_rows' => 6,
+            'teeny' => false,
+        ),
+    ));
+
     $cmb_events = new_cmb2_box( array(
         'id'           => $prefix . 'box_events',
         'title'        => __( 'Events collegati', 'design_comuni_italia' ),

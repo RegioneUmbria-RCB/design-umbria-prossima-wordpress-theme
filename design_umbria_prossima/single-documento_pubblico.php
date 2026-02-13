@@ -52,6 +52,10 @@ get_header();
             $more_info = dci_get_wysiwyg_field("ulteriori_informazioni");
             $riferimenti_normativi = dci_get_wysiwyg_field("riferimenti_normativi"); 			
             $documenti_collegati = dci_get_meta("documenti_collegati");
+            $paragrafi_aggiuntivi = dci_get_meta("paragrafi_aggiuntivi");
+            if ( ! is_array( $paragrafi_aggiuntivi ) ) {
+                $paragrafi_aggiuntivi = array();
+            }
             ?>
             <div class="container" id="main-container">
                 <div class="row">
@@ -232,6 +236,16 @@ get_header();
                                                                     </a>
                                                                 </li>
                                                                 <?php } ?>
+
+                                                                <?php foreach ( $paragrafi_aggiuntivi as $idx => $p ) {
+                                                                    if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) ) { ?>
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" href="#paragrafo-<?php echo (int) $idx; ?>">
+                                                                        <span><?php echo esc_html( ! empty( $p['titolo'] ) ? $p['titolo'] : 'Paragrafo ' . ( $idx + 1 ) ); ?></span>
+                                                                    </a>
+                                                                </li>
+                                                                <?php }
+                                                                } ?>
 
                                                                 <?php if( is_array($documenti_collegati) && count($documenti_collegati) ) { ?>
                                                                 <li class="nav-item">
@@ -426,6 +440,19 @@ get_header();
                                 </div>
                             </section>
                             <?php } ?>
+
+                            <?php foreach ( $paragrafi_aggiuntivi as $idx => $p ) {
+                                if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) ) {
+                                    $titolo_paragrafo = ! empty( $p['titolo'] ) ? $p['titolo'] : 'Paragrafo ' . ( $idx + 1 );
+                            ?>
+                            <section id="paragrafo-<?php echo (int) $idx; ?>" class="it-page-section mb-5">
+                                <h4><?php echo esc_html( $titolo_paragrafo ); ?></h4>
+                                <div class="richtext-wrapper">
+                                    <?php echo wp_kses_post( $p['testo'] ?? '' ); ?>
+                                </div>
+                            </section>
+                            <?php }
+                            } ?>
 
                             <?php if( is_array($documenti_collegati) && count($documenti_collegati) ) { ?>
                             <section id="documenti_collegati" class="it-page-section mb-5">
