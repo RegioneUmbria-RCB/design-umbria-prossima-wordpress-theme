@@ -114,11 +114,9 @@ get_header();
                     <h1 class="title-xxlarge"><?php echo esc_html($term->name); ?></h1>
                   </div>
 
-                  <?php
-                  $term_description = get_category_page_description( $term );
-                  if ( ! empty( $term_description ) ) : ?>
-                    <p class="u-main-black text-paragraph-regular-medium">
-                      <?php echo esc_html( $term_description ); ?>
+                  <?php if (!empty($term->description)) : ?>
+                    <p class="u-main-black text-paragraph-regular-medium" style="text-align: justify;">
+                      <?php echo esc_html($term->description); ?>
                     </p>
                   <?php endif; ?>
                 </div>

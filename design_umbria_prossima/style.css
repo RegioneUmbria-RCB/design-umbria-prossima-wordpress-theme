@@ -237,3 +237,9 @@ aside
     color: var(--bs-primary) !important;
   }
 }
+
+/* Descrizione categoria in hero: testo giustificato */
+.category-hero-description,
+.hero-text .category-hero-description {
+  text-align: justify !important;
+}

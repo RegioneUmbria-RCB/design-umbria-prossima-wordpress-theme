@@ -7,22 +7,7 @@
 
   define('COMUNI_PAGINE',jsonToArray(get_template_directory()."/inc/origin-tema-comuni/comuni_pagine.json")['pagine']);
   define('COMUNI_TIPOLOGIE',jsonToArray(get_template_directory()."/inc/origin-tema-comuni/comuni_tipologie.json")['tipologie']);
-
-  /**
-   * Restituisce la descrizione da mostrare per una categoria: se in Impostazioni template > Category Page
-   * è impostata una descrizione per questa categoria, usa quella; altrimenti la descrizione del term.
-   *
-   * @param WP_Term $term Termine (categoria).
-   * @return string
-   */
-  function get_category_page_description( $term ) {
-    $opts = get_option( 'category_metabox', array() );
-    $key  = 'description_' . $term->term_id;
-    if ( ! empty( $opts[ $key ] ) ) {
-      return $opts[ $key ];
-    }
-    return $term->description ?? '';
-  }
+  
 
   function dci_get_tipologie_related_to_taxonomy($taxonomy) {
         $result = array();

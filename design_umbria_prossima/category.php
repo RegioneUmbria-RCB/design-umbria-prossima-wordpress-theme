@@ -73,12 +73,13 @@ if($show_content_list == 'on'){
 <!-- HERO + Breadcrumb -->
 <div class="col-12 shadow bg-primary text-white">
     <div class="container bg-primary">
+        <!-- Breadcrumb e titolo -->
         <div class="row justify-content-center">
-            <div class="col-lg-8 px-lg-4 py-lg-2 me-auto">
+            <div class="col-12 col-lg-8 px-lg-4 py-lg-2 me-auto">
                 <div class="cmp-hero">
                     <section class="it-hero-wrapper align-items-start">
                         <div class="row">
-                            <div class="col-12 pt-0 ps-0 pl-20 pb-4 pb-lg-60">
+                            <div class="col-12 pt-0 ps-0 pl-20 pb-2 pb-lg-3">
                                 <div class="cmp-breadcrumbs mt-0 pt-4" role="navigation">
                                     <nav class="breadcrumb-container" aria-label="breadcrumb">
                                         <ol class="breadcrumb" style="display: flex; align-items: center;">
@@ -103,27 +104,27 @@ if($show_content_list == 'on'){
                                     </nav>
                                 </div>
                                 <h1 class="text-white hero-title"><?php single_cat_title(); ?></h1>
-                                <p class="hero-text text-white" style="text-align: justify;"><?php
-                                    $cat_description = get_category_page_description( $current_cat );
-                                    if ( '' !== $cat_description ) {
-                                        echo esc_html( $cat_description );
-                                    }
-                                ?></p>
                             </div>
                         </div>
                     </section>
                 </div>
             </div>
-
-            <!-- Menu sottocategorie -->
+        </div>
+        <!-- Descrizione e menu laterale allineati -->
+        <div class="row align-items-start justify-content-center pb-4 pb-lg-60">
+            <div class="col-lg-8 px-lg-4 me-auto">
+                <div class="hero-text">
+                    <p class="text-white mb-0 category-hero-description"><?php if ( '' != get_the_archive_description() ) { echo get_the_archive_description(); } ?></p>
+                </div>
+            </div>
             <?php if($show_subcategories_header == "on"): ?>
-            <div class="col-lg-3 offset-lg-1 pt-3">
+            <div class="col-lg-3 offset-lg-1 pt-0 pt-lg-0">
                 <aside id="section-menu">
                     <nav class="section-menu mb-4">
                         <div class="link-list-wrapper">
                             <ul class="link-list">
                                 <?php
-                                if ($subcategories) {            
+                                if ($subcategories) {
                                     foreach ($subcategories as $subcategory) {
                                         $external_link = get_term_meta( $subcategory->term_id, 'external_link', true );
                                         $subcat_permalink = !empty($external_link)? $external_link : get_category_link($subcategory->term_id);
