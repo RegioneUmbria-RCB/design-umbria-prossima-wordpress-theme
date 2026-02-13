@@ -452,8 +452,10 @@ add_action( 'admin_print_scripts-post.php', 'dci_documento_pubblico_admin_script
 
 function dci_documento_pubblico_admin_script() {
     global $post_type;
-    if( 'documento_pubblico' == $post_type )
-        wp_enqueue_script( 'luogo-admin-script', get_template_directory_uri() . '/inc/admin-js/documento_pubblico.js' );
+    if( 'documento_pubblico' == $post_type ) {
+        $ver = filemtime( get_template_directory() . '/inc/admin-js/documento_pubblico.js' );
+        wp_enqueue_script( 'documento-pubblico-admin-script', get_template_directory_uri() . '/inc/admin-js/documento_pubblico.js', array('jquery'), $ver, true );
+    }
 }
 
 /**
