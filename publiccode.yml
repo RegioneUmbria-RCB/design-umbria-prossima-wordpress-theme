@@ -1,51 +1,38 @@
-publiccodeYmlVersion: '0.2"
-categories:
-  - office
-  - document-management
-  - workflow-management
-  - data-visualization
-description:
-  it:
-    features:
-      - Sito web Prossima
-    genericName: Prossima
-    longDescription: |
-      Prossima
-    shortDescription: |
-      Prossima
-developmentStatus: stable
-it:
-  conforme:
-    gdpr: true
-    lineeGuidaDesign: true
-    misureMinimeSicurezza: true
-    modelloInteroperabilita: true
-  countryExtensionVersion: '0.2"
-  piattaforme:
-    anpr: false
-    cie: false
-    pagopa: false
-    spid: false
-  riuso:
-    codiceIPA: r_umbria
-legal:
-  license: EUPL-1.2
-  repoOwner: Regione Umbria
-localisation:
-  availableLanguages:
-    - it
-  localisationReady: false
-maintenance:
-  contacts:
-    - name: Giovanni Gentili
-  type: internal
-name: Prossima
+publiccodeYmlVersion: 0.5.0
+name: Sito web Prossima
+applicationSuite: Web Application
+url: https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme
+releaseDate: 2024-02-02
 platforms:
   - web
-releaseDate: '2024-02-02"
+organisation:
+  uri: https://prossima.regione.umbria.it/
+  name: Regione Umbria
+developmentStatus: stable
 softwareType: standalone/web
-softwareVersion: '2.117"
-url: 'https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme"
-usedBy:
-  - "CodiceIPA r_umbria"
-  
+description:
+  it:
+    localisedName: Sito web Prossima
+    shortDescription: office, document-management, workflow-management, data-visualization
+    longDescription: "Il template è stato realizzato da Regione Umbria, in collaborazione con la società in house PuntoZero Scarl, puntando ad una piena implementazione delle linee guida AgID e del design system .Italia (impiegato anche nella misura PNRR 1.4.1) quale base per il consolidamento progressivo o dei siti istituzionali e tematici della Regione e delle articolazioni regionali ("gruppo amministrazione pubblica" - GAP - e altri soggetti pubblici regionali) nella logica integrata e coordinata dell’accesso unico regionale (LR n.8/2011). Obiettivo principale del template è quello di rendere semplice l'accesso ai contenuti, garantendo la coerenza delle informazioni di una "aggregazione di soggetti pubblici" che si coordinano secondo precisi "content type" ovvero con un approccio "data-first" che permetta la progressiva automazione dei processi di pubblicazione a partire da dataset open data e/o da altre banche dati interne.Il template è un tema WordPress riutilizzabile da chiunque, progettato per essere facilmente adottato da enti pubblici, aderisce al "design system .Italia" e riusa parti del "modello di sito istituzionale" progettati nell'ambito dell'iniziativa Designers Italia dal Dipartimento per la trasformazione digitale nel rispetto delle LG sul design web e sull'accessibilità definite da AgID.e."
+    documentation: https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme
+    apiDocumentation: https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme
+    features:
+     - office
+     - document-management
+     - workflow-management
+     - data-visualization
+legal:
+  license: EUPL-1.2
+maintenance:
+  type: internal
+  contacts:
+    - name: Giovanni Gentili
+      email: ggentili@regione.umbria.it
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - it
+IT:
+  countryExtensionVersion: "1.0"
+ 
