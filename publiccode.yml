@@ -6,8 +6,7 @@ releaseDate: 2024-02-02
 platforms:
   - web
 organisation:
-  uri: https://prossima.regione.umbria.it/
-  name: Regione Umbria
+  uri: "urn:x-italian-pa:r_umbria"
 developmentStatus: stable
 softwareType: standalone/web
 description:
