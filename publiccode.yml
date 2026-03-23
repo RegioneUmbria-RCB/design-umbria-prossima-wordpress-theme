@@ -2,40 +2,37 @@ publiccodeYmlVersion: 0.5.0
 name: Template Wordpress “Design Umbria Prossima”
 applicationSuite: Web Application
 url: https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme
+landingURL: https://prossima.regione.umbria.it/
 releaseDate: 2025-06-25
 platforms:
   - web
 organisation:
   uri: "urn:x-italian-pa:r_umbria"
-developmentStatus: stable
+developmentStatus: concept
 softwareType: standalone/web
 description:
   it:
-    localisedName: Template Wordpress “Design Umbria Prossima”
+    localisedName: Un template per gli Enti della Regione Umbria
     shortDescription: Un template per gli Enti della Regione Umbria
-    longDescription: Il template è stato realizzato da Regione Umbria, in collaborazione con la società in house PuntoZero Scarl, puntando ad una piena implementazione delle linee
-    guida AgID e del design system .Italia (impiegato anche nella misura PNRR 1.4.1) quale base per il consolidamento progressivo o dei siti istituzionali e tematici della 
-    Regione e delle articolazioni regionali ("gruppo amministrazione pubblica" - GAP - e altri soggetti pubblici regionali) nella logica integrata e coordinata dell’accesso unico 
-    regionale (LR n.8/2011).
-    Obiettivo principale del template è quello di rendere semplice l'accesso ai contenuti, garantendo la coerenza delle informazioni di una "aggregazione di soggetti pubblici" che 
-    si coordinano secondo precisi "content type" ovvero con un approccio "data-first" che permetta la progressiva automazione dei processi di pubblicazione a partire da dataset 
-    open data e/o da altre banche dati interne..
-    Il template è un tema WordPress riutilizzabile da chiunque, progettato per essere facilmente adottato da enti pubblici, aderisce al "design system .Italia" e riusa parti del 
-    "modello di sito istituzionale" progettati nell'ambito dell'iniziativa Designers Italia dal Dipartimento per la trasformazione digitale nel rispetto delle LG sul design web e 
-    sull'accessibilità definite da AgID.e.
+    longDescription: >-
+      Il template è stato realizzato da Regione Umbria, in collaborazione con la
+      società in house PuntoZero Scarl, puntando ad una piena implementazione
+      delle linee
+          guida AgID e del design system .Italia (impiegato anche nella misura PNRR 1.4.1) quale base per il consolidamento progressivo o dei siti istituzionali e tematici della 
+          Regione e delle articolazioni regionali ("gruppo amministrazione pubblica" - GAP - e altri soggetti pubblici regionali) nella logica integrata e coordinata dell’accesso unico 
+          regionale (LR n.8/2011).
+          Obiettivo principale del template è quello di rendere semplice l'accesso ai contenuti, garantendo la coerenza delle informazioni di una "aggregazione di soggetti pubblici" che 
+          si coordinano secondo precisi "content type" ovvero con un approccio "data-first" che permetta la progressiva automazione dei processi di pubblicazione a partire da dataset 
+          open data e/o da altre banche dati interne..
+          Il template è un tema WordPress riutilizzabile da chiunque, progettato per essere facilmente adottato da enti pubblici, aderisce al "design system .Italia" e riusa parti del 
+          "modello di sito istituzionale" progettati nell'ambito dell'iniziativa Designers Italia dal Dipartimento per la trasformazione digitale nel rispetto delle LG sul design web e 
+          sull'accessibilità definite da AgID
     documentation: https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme
     apiDocumentation: https://github.com/RegioneUmbria-RCB/design-umbria-prossima-wordpress-theme
-    features:    
-        Il template è concepito come una base solida e configurabile, che consente
-        - una rapida implementazione configurazione veloce e intuitiva del sito;
-        - una gestione autonoma dei contenuti interfaccia user-friendly per i redattori;
-        - la massima aderenza alle normative conformità AGID e accessibilità WCAG 2.1.
-        La realizzazione del template fa tesoro dell'esperienza maturata durante lo sviluppo 
-        del portale prossima.regione.umbria.it, 
-        da cui questo progetto eredita l'approccio metodologico, 
-        la struttura dei contenuti e alcune funzionalità chiave.
+    features:
+      - template AGID
 legal:
-  license: GNU Affero General Public License
+  license: EUPL-1.2
 maintenance:
   type: internal
   contacts:
@@ -45,8 +42,3 @@ localisation:
   localisationReady: true
   availableLanguages:
     - it
-IT:
-  countryExtensionVersion: "1.0"
-  piattaforme:
-    spid: true
-    cie: true
