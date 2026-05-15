@@ -220,6 +220,173 @@ Da questo tab è possibile configurare l'homepage del sito web:
 
 > Per completare la costruzione della homepage, consultare la sezione [Aggiungi una sezione con un elenco](#aggiungi-una-sezione-con-un-elenco).
 
+#### Hero "a rotazione al refresh" (dettaglio completo)
+
+La sezione di ricerca in alto homepage supporta una **lista di immagini hero**.  
+Ad ogni caricamento/refresh della homepage il sistema:
+
+1. legge tutte le immagini configurate nel gruppo "Immagini hero";
+2. ne seleziona **una in modo casuale**;
+3. la mostra come sfondo dell'hero.
+
+In pratica l'effetto è una rotazione casuale tra più immagini a ogni refresh.
+
+> **Nota importante:** non è uno slider temporizzato (autoplay), ma una selezione random per singolo caricamento pagina.
+
+##### Campi configurabili per ogni immagine hero
+
+Per ogni voce "Immagine hero" puoi compilare:
+
+- **Immagine**: file media usato come sfondo hero
+- **Titolo immagine**: testo mostrato in basso a destra
+- **Link titolo**: URL cliccabile associato al titolo
+
+##### Titolo immagine linkabile (anche verso siti esterni)
+
+Il titolo visualizzato in basso a destra dell'hero è cliccabile e può puntare a:
+
+- una pagina interna del sito (es. approfondimento locale)
+- un URL esterno (es. pagina istituzionale che spiega la campagna/funzionalità)
+
+Se il titolo è compilato ma il link non è valorizzato, il sistema applica fallback su `#`.
+
+##### Comportamento frontend dell'hero ricerca
+
+Nell'hero vengono renderizzati insieme:
+
+- **Titolo fisso** "Cosa stai cercando?"
+- **Bottoni rapidi** (quick links configurabili da backend)
+- **Form di ricerca** con input `s` e submit verso `/search/`
+- **Titolo immagine linkabile** posizionato in basso a destra
+
+##### Esempio pratico di configurazione hero
+
+```
+Attiva ricerca: ✓
+
+Link rapido 1:
+- URL: /servizi
+- Label: Servizi
+
+Link rapido 2:
+- URL: /novita
+- Label: Novità
+
+Immagine hero 1:
+- Immagine: campagna-accessibilita.jpg
+- Titolo immagine: Accessibilità digitale
+- Link titolo: https://www.agid.gov.it/it/design-servizi/accessibilita
+
+Immagine hero 2:
+- Immagine: open-data.jpg
+- Titolo immagine: Dati aperti regionali
+- Link titolo: https://dati.umbria.it/
+```
+
+Con questa configurazione, ogni refresh della homepage mostra una delle immagini caricate con relativo titolo/link dedicato.
+
+#### Funzionalità complete della Homepage
+
+La homepage è composta da blocchi/sezioni ordinabili, ognuno con impostazioni autonome.
+
+- **Titolo sezione** con allineamento (sinistra, centro, destra)
+- **Divisore opzionale** sotto il titolo
+- **Piè di sezione** con label + link (in versione link testuale o bottone)
+- **Layout**: griglia oppure carosello
+- **Carosello con due varianti**:
+  - scorrimento con dots
+  - scorrimento con frecce
+
+Ogni sezione può essere popolata in tre modalità:
+
+1. **Seleziona post**
+2. **Seleziona categorie**
+3. **Seleziona tassonomie**
+
+#### 1) Seleziona post
+
+Quando si usa la modalità "seleziona post", sono disponibili:
+
+- **Tipologia di post** (inclusa opzione "qualsiasi post")
+- **Tipologia card** in base al post type scelto
+- **Filtro contenuti**:
+  - i più recenti
+  - i più recenti per tassonomia
+  - selezione manuale
+- **Numero massimo elementi** (configurabile)
+- **Selezione manuale con ricerca AJAX** (con badge dei contenuti selezionati e link rapido alla modifica in admin)
+
+#### 2) Seleziona categorie
+
+Quando si usa la modalità "seleziona categorie":
+
+- viene mostrata una **checklist multipla** delle categorie WordPress
+- le categorie selezionate vengono renderizzate come **card categoria**
+- è disponibile sia layout a **griglia** sia a **carosello**
+
+#### 3) Seleziona tassonomie
+
+Quando si usa la modalità "seleziona tassonomie":
+
+- si sceglie prima la **tassonomia**
+- si seleziona la **tipologia card tassonomia**
+- si selezionano uno o più **termini** (caricamento dinamico)
+
+Attualmente, le tassonomie principali supportate per le card dedicate sono:
+
+- **Argomenti** → Card Argomento Standard
+- **Focus** → Card Focus Standard
+
+#### Catalogo card disponibili (Homepage)
+
+Le card disponibili dipendono dal tipo di contenuto scelto. Le principali tipologie incluse nel tema sono:
+
+- **Post generici / qualsiasi post**
+  - Card Immagine Background
+  - Card Post Generico
+- **Notizia**
+  - Card Notizia Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Servizio**
+  - Card Servizio Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Documento pubblico**
+  - Card Documento Pubblico Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Sito tematico**
+  - Card Sito Tematico Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Persona pubblica**
+  - Card Persona Pubblica Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Comuni**
+  - Card Comune Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Unità organizzativa**
+  - Card Unità Organizzativa Standard
+  - Card Post Generico
+  - Card Immagine Background
+- **Enti e fondazioni**
+  - Card Enti e Fondazioni
+  - Card Post Generico
+  - Card Immagine Background
+
+#### Specifiche tecniche di rendering in frontend
+
+- Le sezioni vengono renderizzate in homepage nell'ordine impostato nel backend.
+- Il layout selezionato carica automaticamente:
+  - `grid` per visualizzazione a griglia
+  - `carousel-1` per carosello con dots
+  - `carousel-2` per carosello con frecce
+- Se una card non è impostata manualmente, il sistema usa una card di default coerente con la tipologia selezionata.
+- Se una sezione non produce risultati (nessun contenuto/termine), la sezione non viene visualizzata nel frontend.
+
 ### Single Page
 
 Ogni content type (Notizie, Servizi, Eventi, Documenti, ecc.) prevede la compilazione dei campi definiti dal modello Design Italia.
