@@ -4,8 +4,11 @@ if ( $args ) :
   $title     = get_the_title( $post_id );
   $external_link = get_post_meta( $post_id, 'external_link', true );
   $permalink = !empty($external_link)? $external_link : get_permalink( $post_id );
-  $timestamp = get_post_meta( $post_id, '_dci_notizia_data_pubblicazione', true );
-  if ( ! empty( $timestamp ) ) {$formatted_date = date_i18n( 'd M Y', intval( $timestamp ) );}
+  $timestamp      = get_post_meta( $post_id, '_dci_notizia_data_pubblicazione', true );
+  $formatted_date = '';
+  if ( ! empty( $timestamp ) ) {
+    $formatted_date = date_i18n( 'd M Y', intval( $timestamp ) );
+  }
   $excerpt  = get_post_meta( $post_id, '_dci_notizia_descrizione_breve', true );
   $image_id  = get_post_meta( $post_id, '_dci_notizia_immagine_id', true );
   $terms = get_the_terms($post_id, 'argomenti');
@@ -27,9 +30,11 @@ if ( $args ) :
             <?php endif;
           } ?>                        
           </div>
+          <?php if ( $formatted_date ) : ?>
           <span class="data" style="font-family: 'Roboto Mono'; font-size: 14px; font-weight: 400; line-height: 24px; text-align: left; color: #2F475E;">
             <?php echo esc_html( $formatted_date ); ?>
           </span>
+          <?php endif; ?>
         </div>
 
         <a class="text-decoration-none" href="<?php echo esc_url( $permalink ); ?>" aria-labelledby="titleLabel-<?php echo esc_attr( $post_id ); ?>">

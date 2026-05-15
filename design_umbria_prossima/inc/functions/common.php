@@ -42,6 +42,10 @@ function get_card_type(){
         'card-generic-post-1'  => 'Card Post Generico',
         'card-full-image-1' => 'Card Immagine Background',
     ),
+    'punto_contatto' => array(
+        'card-punto-contatto-1' => 'Card Punto di Contatto Standard',
+        'card-generic-post-1'   => 'Card Post Generico',
+    ),
     'enti_e_fondazioni' => array(
         'card-ente-fondazione-1'  => 'Card Enti e Fondazioni',
         'card-generic-post-1'  => 'Card Post Generico',

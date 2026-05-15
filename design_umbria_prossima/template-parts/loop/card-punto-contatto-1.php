@@ -1,7 +1,11 @@
 <?php
 if ( $args ) :
-$data = get_post_meta($args->ID);
-$contatti = unserialize($data["_dci_punto_contatto_voci"][0]);
+$data     = get_post_meta( $args->ID );
+$voci_raw = $data['_dci_punto_contatto_voci'][0] ?? '';
+$contatti = is_string( $voci_raw ) && $voci_raw !== '' ? maybe_unserialize( $voci_raw ) : array();
+if ( ! is_array( $contatti ) ) {
+	$contatti = array();
+}
 ?>
 
 <div class="card card-teaser card-teaser-info shadow mt-3 rounded">
