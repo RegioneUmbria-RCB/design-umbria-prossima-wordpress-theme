@@ -452,9 +452,131 @@ function cmb2_get_taxonomy_terms_callback() {
 	wp_send_json_success( array( 'terms' => $options ) );
 }
 
+/**
+ * Mantiene l'ordine delle righe dei gruppi post_list_group in salvataggio (options page).
+ */
+add_action( 'cmb2_options-page_process_fields_taxonomy_metabox', 'dup_cmb2_normalize_post_list_groups_in_post', 5, 1 );
+add_action( 'cmb2_options-page_process_fields_category_metabox', 'dup_cmb2_normalize_post_list_groups_in_post', 5, 1 );
+add_action( 'cmb2_options-page_process_fields_homepage_metabox', 'dup_cmb2_normalize_post_list_groups_in_post', 5, 1 );
+add_action( 'cmb2_options-page_process_fields_single_metabox', 'dup_cmb2_normalize_post_list_groups_in_post', 5, 1 );
+
+function dup_cmb2_deep_null_to_empty( $value ) {
+	if ( is_array( $value ) ) {
+		foreach ( $value as $key => $item ) {
+			$value[ $key ] = dup_cmb2_deep_null_to_empty( $item );
+		}
+		return $value;
+	}
+
+	return null === $value ? '' : $value;
+}
+
+function dup_cmb2_is_empty_field_value( $value ) {
+	if ( is_array( $value ) ) {
+		foreach ( $value as $item ) {
+			if ( ! dup_cmb2_is_empty_field_value( $item ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	return $value === '' || $value === null || $value === false;
+}
+
+/**
+ * Unisce POST e riga salvata (stesso titolo): il POST vince sui campi inviati,
+ * il resto viene dal DB (es. categories_checklist assente se la riga era nascosta).
+ */
+function dup_cmb2_merge_post_list_row( array $row, array $old_rows ) {
+	$row   = dup_cmb2_deep_null_to_empty( $row );
+	$title = isset( $row['title'] ) ? (string) $row['title'] : '';
+
+	foreach ( $old_rows as $old_row ) {
+		if ( ! is_array( $old_row ) ) {
+			continue;
+		}
+
+		$old_title = isset( $old_row['title'] ) ? (string) $old_row['title'] : '';
+		if ( '' === $title || $old_title !== $title ) {
+			continue;
+		}
+
+		$merged = dup_cmb2_deep_null_to_empty( $old_row );
+		foreach ( $row as $key => $val ) {
+			if ( ! dup_cmb2_is_empty_field_value( $val ) ) {
+				$merged[ $key ] = $val;
+			}
+		}
+
+		return $merged;
+	}
+
+	return $row;
+}
+
+function dup_cmb2_get_cmb_option_key( $cmb ) {
+	$option_key = $cmb->object_id();
+
+	if ( is_string( $option_key ) && '' !== $option_key ) {
+		return $option_key;
+	}
+
+	$keys = $cmb->prop( 'option_key' );
+	if ( is_string( $keys ) && '' !== $keys ) {
+		return $keys;
+	}
+	if ( is_array( $keys ) && ! empty( $keys ) ) {
+		$first = reset( $keys );
+		return is_string( $first ) ? $first : (string) $cmb->cmb_id;
+	}
+
+	return (string) $cmb->cmb_id;
+}
+
+function dup_cmb2_normalize_post_list_groups_in_post( $cmb ) {
+	if ( empty( $cmb->data_to_save ) || ! is_array( $cmb->data_to_save ) ) {
+		return;
+	}
+
+	$cmb->data_to_save = dup_cmb2_deep_null_to_empty( $cmb->data_to_save );
+
+	$option_key = dup_cmb2_get_cmb_option_key( $cmb );
+	$existing   = function_exists( 'cmb2_options' )
+		? cmb2_options( $option_key )->get_options()
+		: get_option( $option_key, array() );
+	if ( ! is_array( $existing ) ) {
+		$existing = array();
+	}
+
+	foreach ( $cmb->data_to_save as $field_id => $value ) {
+		if ( 0 !== strpos( (string) $field_id, 'post_list_group' ) || ! is_array( $value ) ) {
+			continue;
+		}
+
+		$value    = array_values( $value );
+		$old_rows = isset( $existing[ $field_id ] ) && is_array( $existing[ $field_id ] )
+			? array_values( $existing[ $field_id ] )
+			: array();
+
+		foreach ( $value as $index => $row ) {
+			if ( is_array( $row ) ) {
+				$value[ $index ] = dup_cmb2_merge_post_list_row( $row, $old_rows );
+			}
+		}
+
+		$cmb->data_to_save[ $field_id ] = $value;
+	}
+}
+
 add_action( 'admin_head', 'cmb2_print_conditional_script' );
 function cmb2_print_conditional_script() {
 	if ( ! is_admin() ) {
+		return;
+	}
+
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'toplevel_page_impostazioni-template' !== $screen->id ) {
 		return;
 	}
 	?>
@@ -570,6 +692,246 @@ function cmb2_print_conditional_script() {
                     }, wait);
                 };
             }
+
+            /**
+             * Allinea [post_list_group_…][n] all'ordine DOM (salvataggio + frecce).
+             */
+            function getGroupFieldId($table) {
+                var groupId = $table.attr('data-groupid');
+                if (groupId) {
+                    return String(groupId);
+                }
+                var id = $table.attr('id') || '';
+                if (id.indexOf('_repeat') !== -1) {
+                    return id.replace(/_repeat$/, '');
+                }
+                var selector = $table.find('.cmb-add-group-row').first().data('selector');
+                return selector ? String(selector).replace(/_repeat$/, '') : '';
+            }
+
+            function replaceGroupIndexInName(name, groupFieldId, fromIndex, toIndex) {
+                var escapedGroup = String(groupFieldId).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                var escapedFrom = String(fromIndex).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                var pattern = new RegExp(
+                    '(\\[' + escapedGroup + '\\])(\\[' + escapedFrom + '\\])(?=\\[|$)',
+                    'g'
+                );
+                return name.replace(pattern, '$1[' + toIndex + ']');
+            }
+
+            function syncTermsCheckboxNames($row) {
+                var $hidden = $row.find('input[type="hidden"][name*="[selected_terms]"]').first();
+                var base = $hidden.attr('name');
+                if (!base) {
+                    return;
+                }
+                $row.find('.cmb2-terms-checklist input[type="checkbox"]').attr('name', base + '[]');
+            }
+
+            function renameGroupFieldsInRow($row, groupFieldId, fromIndex, toIndex) {
+                if (!groupFieldId || String(fromIndex) === String(toIndex)) {
+                    return;
+                }
+
+                var marker = '[' + groupFieldId + '][';
+
+                $row.find('[name]').each(function () {
+                    var name = this.getAttribute('name');
+                    if (!name || name.indexOf(marker) === -1) {
+                        return;
+                    }
+                    this.setAttribute('name', replaceGroupIndexInName(name, groupFieldId, fromIndex, toIndex));
+                });
+
+                syncTermsCheckboxNames($row);
+            }
+
+            function reindexCmbRepeatableGroup($table) {
+                if (!$table || !$table.length) {
+                    return;
+                }
+                var groupFieldId = getGroupFieldId($table);
+                if (!groupFieldId) {
+                    return;
+                }
+                var groupTitle = $table.find('.cmb-add-group-row').data('grouptitle');
+                var $rows = $table.children('.cmb-repeatable-grouping');
+                if (!$rows.length) {
+                    $rows = $table.find('> .cmb-repeatable-grouping');
+                }
+
+                // Due passaggi con indici temporanei per evitare collisioni [0]↔[1].
+                $rows.each(function (i) {
+                    var $row = $(this);
+                    var prev = $row.attr('data-iterator');
+                    if (prev === undefined || prev === null || prev === '') {
+                        prev = String(i);
+                    } else {
+                        prev = String(prev);
+                    }
+                    renameGroupFieldsInRow($row, groupFieldId, prev, 'tmp' + i);
+                    $row.attr('data-iterator', 'tmp' + i).data('iterator', 'tmp' + i);
+                });
+
+                $rows.each(function (i) {
+                    var $row = $(this);
+                    renameGroupFieldsInRow($row, groupFieldId, 'tmp' + i, i);
+
+                    var rowId = $row.attr('id');
+                    if (rowId) {
+                        $row.attr('id', rowId.replace(/-(\d+)$/, '-' + i));
+                    }
+
+                    $row.attr('data-iterator', i).data('iterator', i);
+
+                    if (groupTitle && window.CMB2 && typeof window.CMB2.resetGroupTitles === 'function') {
+                        window.CMB2.resetGroupTitles($row, i, groupTitle);
+                    }
+
+                    syncTermsCheckboxNames($row);
+                });
+            }
+
+            /**
+             * Taxonomy/Category/Single: un solo gruppo visibile alla volta — :visible non basta.
+             */
+            function reindexActivePostListGroups(form) {
+                var $form = $(form);
+                var reindexed = 0;
+
+                var $tax = $form.find('#taxonomy_post_type');
+                if ($tax.length && $tax.val()) {
+                    var $g = $form.find('#post_list_group_' + $tax.val() + '_repeat');
+                    if ($g.length) {
+                        reindexCmbRepeatableGroup($g);
+                        reindexed++;
+                    }
+                }
+
+                var $cat = $form.find('#category_post_type');
+                if ($cat.length && $cat.val()) {
+                    var $gCat = $form.find('#post_list_group_' + $cat.val() + '_repeat');
+                    if ($gCat.length) {
+                        reindexCmbRepeatableGroup($gCat);
+                        reindexed++;
+                    }
+                }
+
+                var $single = $form.find('#single_post_type');
+                if ($single.length && $single.val()) {
+                    var $gSingle = $form.find('#post_list_group_' + $single.val() + '_repeat');
+                    if ($gSingle.length) {
+                        reindexCmbRepeatableGroup($gSingle);
+                        reindexed++;
+                    }
+                }
+
+                if (!reindexed) {
+                    $form.find('.cmb-repeatable-group.sortable:visible').each(function () {
+                        reindexCmbRepeatableGroup($(this));
+                        reindexed++;
+                    });
+                }
+
+                return reindexed;
+            }
+
+            /**
+             * Solo i post_list_group nascosti: con molti termini superano max_input_vars.
+             * Non disabilitare alert/checkbox condizionali: assenti dal POST, CMB2 passa null a wp_kses_post.
+             */
+            function disableHiddenMetaboxInputs($form) {
+                $form.find('.cmb-repeatable-group[id^="post_list_group_"]').each(function () {
+                    var $group = $(this);
+                    var off = !$group.is(':visible');
+                    $group.find('input, select, textarea').prop('disabled', off);
+                });
+            }
+
+            function runReindexBeforeSave(formEl) {
+                var $form = $(formEl);
+                if ($form.data('dupReindexed')) {
+                    return $form.data('dupReindexed');
+                }
+
+                var reindexed = reindexActivePostListGroups(formEl);
+                handleConditionalFields();
+                disableHiddenMetaboxInputs($form);
+                $form.data('dupReindexed', reindexed);
+                return reindexed;
+            }
+
+            document.addEventListener('submit', function (e) {
+                var form = e.target;
+                if (!form || !form.classList || !form.classList.contains('cmb-form')) {
+                    return;
+                }
+                runReindexBeforeSave(form);
+            }, true);
+
+            $(document).on('click', '.cmb-form input[name="submit-cmb"], .cmb-form button[name="submit-cmb"]', function () {
+                var $form = $(this).closest('form.cmb-form');
+                if ($form.length) {
+                    runReindexBeforeSave($form[0]);
+                }
+            });
+
+            function shiftPostListGroupRow(btn, moveUp) {
+                var $btn = $(btn);
+                var $from = $btn.closest('.cmb-repeatable-grouping');
+                var $table = $btn.closest('.cmb-repeatable-group.sortable');
+
+                if (!$table.length) {
+                    return;
+                }
+
+                var $goto = $from[moveUp ? 'prev' : 'next']('.cmb-repeatable-grouping');
+                if (!$goto.length) {
+                    return;
+                }
+
+                if (moveUp) {
+                    $from.insertBefore($goto);
+                } else {
+                    $from.insertAfter($goto);
+                }
+
+                reindexCmbRepeatableGroup($table);
+                handleConditionalFields();
+            }
+
+            var dupShiftLock = false;
+
+            function onShiftRowPointer(e) {
+                var btn = e.target.closest('.cmb-shift-rows, .move-up, .move-down');
+                if (!btn || !btn.closest('.cmb-repeatable-group.sortable')) {
+                    return;
+                }
+                if (dupShiftLock) {
+                    return;
+                }
+                dupShiftLock = true;
+                setTimeout(function () {
+                    dupShiftLock = false;
+                }, 400);
+
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                shiftPostListGroupRow(btn, btn.classList.contains('move-up'));
+            }
+
+            // Solo click: mousedown+click spostava due volte e annullava il riordino.
+            document.addEventListener('click', onShiftRowPointer, true);
+
+            function disableCmb2NativeRowShift() {
+                $('.cmb-repeatable-group.sortable .cmb-shift-rows').off('click');
+            }
+
+            $(disableCmb2NativeRowShift);
+            $(document).on('cmb2_init', function () {
+                setTimeout(disableCmb2NativeRowShift, 0);
+            });
 
             function normalizeIds(arr) {
                 return Array.from(new Set(arr.filter(Boolean).map(function (x) {

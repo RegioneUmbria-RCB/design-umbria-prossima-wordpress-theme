@@ -144,6 +144,10 @@ function category_metabox() {
 
 add_action('admin_footer', 'category_metabox_scripts');
 function category_metabox_scripts() {
+  $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+  if (!$screen || 'toplevel_page_impostazioni-template' !== $screen->id) {
+    return;
+  }
   ?>
   <script>
     jQuery(document).ready(function($) {

@@ -109,6 +109,10 @@ function taxonomy_metabox() {
 // JS per mostrare/nascondere campi alert
 add_action('admin_footer', 'taxonomy_metabox_scripts');
 function taxonomy_metabox_scripts() {
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    if (!$screen || 'toplevel_page_impostazioni-template' !== $screen->id) {
+        return;
+    }
     ?>
     <script>
     jQuery(document).ready(function($) {

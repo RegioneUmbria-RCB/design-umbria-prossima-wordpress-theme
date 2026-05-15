@@ -12,6 +12,9 @@ $term_taxonomy = $term->taxonomy;
 $image_id = get_term_meta($term_id, 'dci_term_immagine_id', true);
 $icon_id  = get_term_meta($term_id, 'icon_id', true);
 $post_list_group = $metabox["post_list_group_{$term_taxonomy}_{$term_id}"] ?? [];
+if ( is_array( $post_list_group ) ) {
+    $post_list_group = array_values( $post_list_group );
+}
 $alert_active = $metabox["alert_enable_{$term_taxonomy}_{$term_id}"] ?? null;
 $alert_type = $metabox["alert_type_{$term_taxonomy}_{$term_id}"] ?? null;
 $alert_message = $metabox["alert_message_{$term_taxonomy}_{$term_id}"] ?? "";

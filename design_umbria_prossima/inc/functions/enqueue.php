@@ -52,18 +52,21 @@ function theme_enqueue() {
 
 
   function enqueue_scripts_admin($hook) {
-    wp_enqueue_script(
-        'cmb2-dynamic-posts',
-        get_template_directory_uri() . '/inc/js/cmb2-dynamic-posts.js',
-        [],
-        null,
-        true
-    );
+    $cmb2_dynamic_posts = get_template_directory() . '/inc/js/cmb2-dynamic-posts.js';
+    if ( is_readable( $cmb2_dynamic_posts ) ) {
+      wp_enqueue_script(
+          'cmb2-dynamic-posts',
+          get_template_directory_uri() . '/inc/js/cmb2-dynamic-posts.js',
+          [],
+          null,
+          true
+      );
 
-    wp_localize_script('cmb2-dynamic-posts', 'cmb2_ajax', [
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce'    => wp_create_nonce('cmb2_get_posts_nonce'),
-    ]);
+      wp_localize_script('cmb2-dynamic-posts', 'cmb2_ajax', [
+          'ajax_url' => admin_url('admin-ajax.php'),
+          'nonce'    => wp_create_nonce('cmb2_get_posts_nonce'),
+      ]);
+    }
 
     wp_enqueue_style(
         'custom-css',

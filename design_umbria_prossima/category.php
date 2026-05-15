@@ -30,6 +30,9 @@ $show_content_list         = $metabox["show_content_list_{$cat_id}"] ?? null;
 $show_content_filters      = $metabox["show_content_filters_{$cat_id}"] ?? null;
 $show_content_search       = $metabox["show_content_search_{$cat_id}"] ?? null;
 $post_list_group           = $metabox["post_list_group_{$cat_id}"] ?? [];
+if ( is_array( $post_list_group ) ) {
+    $post_list_group = array_values( $post_list_group );
+}
 $post_type                 = $metabox["post_type_for_category_{$cat_id}"] ?? [];
 $alert_active              = $metabox["alert_enable_{$cat_id}"] ?? null;
 $alert_type                = $metabox["alert_type_{$cat_id}"] ?? null;
