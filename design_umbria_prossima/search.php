@@ -39,7 +39,7 @@ $items = new WP_Query($args);
 
         <aside class="col-12 col-md-3 sidebar d-none d-lg-block">
 
-            <form role="search" method="get" class="search-form" id="filter-form" action="">
+            <form role="search" method="get" class="search-form" id="filter-form" action="<?php echo esc_url( get_search_form_action_url() ); ?>">
                 <div id="accordionFilters">
 
                     <?php 
@@ -176,7 +176,7 @@ $items = new WP_Query($args);
 
         <div class="col-12 col-lg-9">
 
-            <form role="search" id="search-form" method="get" class="search-form d-flex align-items-end mb-3" action="">
+            <form role="search" id="search-form" method="get" class="search-form d-flex align-items-end mb-3" action="<?php echo esc_url( get_search_form_action_url() ); ?>">
                 <div class="cmp-input-search mr-3 flex-grow-1">
                     <div class="form-group autocomplete-wrapper mb-0">
                         <label for="autocomplete-two" class="visually-hidden active">Cerca</label>
