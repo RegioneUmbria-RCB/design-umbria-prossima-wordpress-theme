@@ -770,4 +770,4 @@ Conforme alle linee guida [Designers Italia](https://designers.italia.it/) e al 
 
 **Versione:** 1.0  
 **Compatibilità WordPress:** 6.8.3  
-**Ultima modifica:** Novembre 2025
+**Ultima modifica:** Maggio 2026
