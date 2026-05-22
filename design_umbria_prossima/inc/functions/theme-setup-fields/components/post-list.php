@@ -312,8 +312,9 @@ function add_post_list_metabox_fields( $cmb, $identifier = '', $description_exte
             <div class="cmb-row cmb-type-multicheck cmb2-id-selected_terms">
                 <div class="cmb-th"><label><?php echo esc_html( $field->args( 'name' ) ); ?></label></div>
                 <div class="cmb-td">
-                    <input type="hidden" name="<?php echo esc_attr( $field->args( '_name' ) ); ?>"
-                           data-saved='<?php echo $saved_json; ?>' />
+                    <input type="hidden" class="cmb2-selected-terms-saved"
+                           data-field-name="<?php echo esc_attr( $field->args( '_name' ) ); ?>"
+                           data-saved="<?php echo esc_attr( $saved_json ); ?>" />
                     <div class="cmb2-terms-checklist"></div>
                 </div>
             </div>
@@ -669,6 +670,16 @@ function cmb2_print_conditional_script() {
             align-items: center;
             gap: 8px;
             padding: 6px 8px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .cmb2-id-selected_terms .cmb-td label input[type="checkbox"] {
+            cursor: pointer;
+            flex-shrink: 0;
+            appearance: auto;
+            -webkit-appearance: checkbox;
+            accent-color: #2271b1;
         }
 
         /* Nasconde le checklist per impostazione predefinita */
@@ -719,9 +730,30 @@ function cmb2_print_conditional_script() {
                 return name.replace(pattern, '$1[' + toIndex + ']');
             }
 
+            function getSelectedTermsFieldBase($row) {
+                var $hidden = $row.find('.cmb2-selected-terms-saved').first();
+                return $hidden.attr('data-field-name') || '';
+            }
+
+            function getSelectedTermsFromRow($row) {
+                var ids = [];
+                $row.find('.cmb2-terms-checklist input[type="checkbox"]:checked').each(function () {
+                    ids.push(String($(this).val()));
+                });
+                return ids;
+            }
+
+            function syncSelectedTermsDataSaved($row) {
+                var ids = getSelectedTermsFromRow($row);
+                var $hidden = $row.find('.cmb2-selected-terms-saved').first();
+                if ($hidden.length) {
+                    $hidden.attr('data-saved', JSON.stringify(ids));
+                }
+                return ids;
+            }
+
             function syncTermsCheckboxNames($row) {
-                var $hidden = $row.find('input[type="hidden"][name*="[selected_terms]"]').first();
-                var base = $hidden.attr('name');
+                var base = getSelectedTermsFieldBase($row);
                 if (!base) {
                     return;
                 }
@@ -741,6 +773,16 @@ function cmb2_print_conditional_script() {
                         return;
                     }
                     this.setAttribute('name', replaceGroupIndexInName(name, groupFieldId, fromIndex, toIndex));
+                });
+
+                $row.find('.cmb2-selected-terms-saved').each(function () {
+                    var fieldName = this.getAttribute('data-field-name');
+                    if (fieldName && fieldName.indexOf(marker) !== -1) {
+                        this.setAttribute(
+                            'data-field-name',
+                            replaceGroupIndexInName(fieldName, groupFieldId, fromIndex, toIndex)
+                        );
+                    }
                 });
 
                 syncTermsCheckboxNames($row);
@@ -854,8 +896,17 @@ function cmb2_print_conditional_script() {
                     return $form.data('dupReindexed');
                 }
 
+                $form.find('.cmb-repeatable-grouping').each(function () {
+                    syncSelectedTermsDataSaved($(this));
+                });
+
                 var reindexed = reindexActivePostListGroups(formEl);
-                handleConditionalFields();
+
+                $form.find('.cmb-repeatable-grouping').each(function () {
+                    syncTermsCheckboxNames($(this));
+                });
+
+                handleConditionalFields({ reloadTerms: false });
                 disableHiddenMetaboxInputs($form);
                 $form.data('dupReindexed', reindexed);
                 return reindexed;
@@ -1083,10 +1134,14 @@ function cmb2_print_conditional_script() {
             function loadTaxonomyTerms($group, taxonomyName, selectedTerms) {
                 selectedTerms = (selectedTerms || []).map(String);
                 var $termsChecklist = $group.find('.cmb2-terms-checklist');
-                var $termsRow = $termsChecklist.closest('.cmb-row'); // trova l'input hidden "base" stampato da CMB2 per selected_terms
-                var $hiddenBase = $termsChecklist.closest('.cmb-td')
-                    .find('input[type="hidden"][name*="[selected_terms]"]').first();
-                var baseName = $hiddenBase.attr('name') || ('post_list_group[' + ($group.data('iterator') || 0) + '][selected_terms]');
+                var $termsRow = $termsChecklist.closest('.cmb-row');
+                var $hiddenBase = $group.find('.cmb2-selected-terms-saved').first();
+                var baseName = getSelectedTermsFieldBase($group);
+
+                if (!baseName) {
+                    return;
+                }
+
                 $termsRow.show();
                 $termsChecklist.addClass('loading').html('<div style="padding: 10px;">Caricamento termini...</div>');
                 $.ajax({
@@ -1110,6 +1165,9 @@ function cmb2_print_conditional_script() {
                                 ' value="' + termKey + '"' + isChecked + '> ' + termName + '</label>';
                         });
                         $termsChecklist.html(optionsHtml);
+                        $termsChecklist.attr('data-loaded-taxonomy', taxonomyName);
+                        syncTermsCheckboxNames($group);
+                        $hiddenBase.attr('data-saved', JSON.stringify(selectedTerms));
                     } else {
                         $termsChecklist.html('<div style="padding: 10px;">Nessun termine trovato.</div>');
                     }
@@ -1163,7 +1221,10 @@ function cmb2_print_conditional_script() {
             }
 
 
-            function handleConditionalFields() {
+            function handleConditionalFields(options) {
+                options = options || {};
+                var reloadTerms = options.reloadTerms !== false;
+
                 $('.cmb-repeatable-grouping').each(function () {
                     var $group = $(this);
                     var $selectionModeSelect = $group.find('.cmb2-selection-mode-select');
@@ -1238,10 +1299,27 @@ function cmb2_print_conditional_script() {
                         var taxonomyName = $group.find('.cmb2-taxonomy-select-terms').val();
                         if (taxonomyName) {
                             $selectedTermsRow.show();
-                            
-                            var $hiddenBase = $group.find('input[type="hidden"][name*="[selected_terms]"]').first();
-                            var savedTerms = JSON.parse($hiddenBase.attr('data-saved') || '[]');
-                            loadTaxonomyTerms($group, taxonomyName, savedTerms);
+
+                            var $checklist = $group.find('.cmb2-terms-checklist');
+                            var $hiddenBase = $group.find('.cmb2-selected-terms-saved').first();
+                            var needsReload = reloadTerms && (
+                                !$checklist.attr('data-loaded-taxonomy') ||
+                                $checklist.attr('data-loaded-taxonomy') !== taxonomyName ||
+                                !$checklist.find('label').length
+                            );
+
+                            if (needsReload) {
+                                var savedTerms = getSelectedTermsFromRow($group);
+                                if (!savedTerms.length) {
+                                    try {
+                                        savedTerms = JSON.parse($hiddenBase.attr('data-saved') || '[]');
+                                    } catch (e) {
+                                        savedTerms = [];
+                                    }
+                                }
+                                loadTaxonomyTerms($group, taxonomyName, savedTerms);
+                            }
+
                             populateTaxonomyCardTypes($group, taxonomyName);
                         }
                     }
@@ -1303,20 +1381,29 @@ function cmb2_print_conditional_script() {
                 doSearch($group);
             }, 300));
 
+            $(document).on('change', '.cmb2-terms-checklist input[type="checkbox"]', function () {
+                syncSelectedTermsDataSaved($(this).closest('.cmb-repeatable-grouping'));
+                // La spunta in wp-admin si disegna spesso solo dopo blur (come un click fuori)
+                window.requestAnimationFrame(function () {
+                    var el = document.activeElement;
+                    if (el && typeof el.blur === 'function') {
+                        el.blur();
+                    }
+                });
+            });
+
             // Gestione cambio tassonomia per i termini
             $(document).on('change', '.cmb2-taxonomy-select-terms', function() {
                 var $group = $(this).closest('.cmb-repeatable-grouping');
                 var taxonomyName = $(this).val();
-                var $hiddenBase = $group.find('input[type="hidden"][name*="[selected_terms]"]').first();
+                var $hiddenBase = $group.find('.cmb2-selected-terms-saved').first();
                 var $termsChecklist = $group.find('.cmb2-terms-checklist');
 
-                // Resetta la checklist e i valori nascosti
-                $termsChecklist.empty();
-                $hiddenBase.val('');
+                $termsChecklist.empty().removeAttr('data-loaded-taxonomy');
+                $hiddenBase.attr('data-saved', '[]');
 
                 if (taxonomyName) {
-                    // Passa array vuoto per i termini selezionati, perché è un cambio di tassonomia
-                    loadTaxonomyTerms($group, taxonomyName, []); 
+                    loadTaxonomyTerms($group, taxonomyName, []);
                     populateTaxonomyCardTypes($group, taxonomyName);
                 } else {
                     $group.find('.cmb2-card-type-taxonomy-select').closest('.cmb-row').hide();
