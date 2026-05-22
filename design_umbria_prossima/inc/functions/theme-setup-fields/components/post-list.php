@@ -674,12 +674,16 @@ function cmb2_print_conditional_script() {
             margin: 0;
         }
 
-        .cmb2-id-selected_terms .cmb-td label input[type="checkbox"] {
-            cursor: pointer;
-            flex-shrink: 0;
+        /* Spunta nativa visibile subito su tutte le schede Impostazioni Template */
+        .cmb2-wrap input[type="checkbox"] {
             appearance: auto;
             -webkit-appearance: checkbox;
             accent-color: #2271b1;
+            cursor: pointer;
+        }
+
+        .cmb2-id-selected_terms .cmb-td label input[type="checkbox"] {
+            flex-shrink: 0;
         }
 
         /* Nasconde le checklist per impostazione predefinita */
@@ -1381,15 +1385,22 @@ function cmb2_print_conditional_script() {
                 doSearch($group);
             }, 300));
 
-            $(document).on('change', '.cmb2-terms-checklist input[type="checkbox"]', function () {
-                syncSelectedTermsDataSaved($(this).closest('.cmb-repeatable-grouping'));
-                // La spunta in wp-admin si disegna spesso solo dopo blur (come un click fuori)
+            function blurActiveElementForCheckboxPaint() {
                 window.requestAnimationFrame(function () {
                     var el = document.activeElement;
                     if (el && typeof el.blur === 'function') {
                         el.blur();
                     }
                 });
+            }
+
+            // Tutte le checkbox CMB2 su Impostazioni Template (tutte le schede)
+            $(document).on('change', '.cmb2-wrap input[type="checkbox"]', function () {
+                var $cb = $(this);
+                if ($cb.closest('.cmb2-terms-checklist').length) {
+                    syncSelectedTermsDataSaved($cb.closest('.cmb-repeatable-grouping'));
+                }
+                blurActiveElementForCheckboxPaint();
             });
 
             // Gestione cambio tassonomia per i termini
