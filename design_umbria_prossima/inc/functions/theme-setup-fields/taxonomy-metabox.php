@@ -28,9 +28,10 @@ function taxonomy_metabox() {
         ));
 
         if (!empty($terms) && !is_wp_error($terms)) {
-            foreach ($terms as $term) {
-                $option_key = $term->taxonomy . '_' . $term->term_id; // chiave coerente
-                $taxonomy_options[$option_key] = $term->name;
+            $term_labels = array();
+            get_hierarchical_term_options( $terms, $term_labels, 0, '', $taxonomy->name . '_' );
+            foreach ( $term_labels as $option_key => $label ) {
+                $taxonomy_options[ $option_key ] = $taxonomy->labels->singular_name . ' — ' . $label;
             }
         }
     }
@@ -45,7 +46,11 @@ function taxonomy_metabox() {
         ),
     ));
 
-    // Creazione campi alert per ogni termine
+    $wp_categories = get_categories( array( 'hide_empty' => false ) );
+    $breadcrumb_category_options = array( '' => __( 'Nessun prefisso categoria', 'design_umbria_prossima' ) );
+    get_hierarchical_term_options( $wp_categories, $breadcrumb_category_options );
+
+    // Creazione campi per ogni termine
     foreach ($taxonomies as $taxonomy) {
         if (in_array($taxonomy->name, array('category', 'post_tag', 'nav_menu', 'link_category', 'post_format'), true)) {
             continue;
@@ -59,6 +64,29 @@ function taxonomy_metabox() {
         if (!empty($terms) && !is_wp_error($terms)) {
             foreach ($terms as $term) {
                 $field_prefix = $term->taxonomy . '_' . $term->term_id;
+
+                $cmb->add_field(array(
+                    'name' => 'Abilita breadcrumb',
+                    'desc' => __( 'Se attivo: in archivio mostra Home, eventuale prefisso categoria, genitori del termine e il termine; sui contenuti taggati con questo termine usa lo stesso percorso prima del titolo.', 'design_umbria_prossima' ),
+                    'id'   => 'breadcrumb_enable_' . $field_prefix,
+                    'type' => 'checkbox',
+                    'attributes' => array(
+                        'data-taxonomy' => $field_prefix,
+                        'class'         => 'taxonomy-conditional-field',
+                    ),
+                ));
+
+                $cmb->add_field(array(
+                    'name'       => 'Prefisso categoria (opzionale)',
+                    'desc'       => __( 'Categorie WordPress da mostrare prima della gerarchia del termine.', 'design_umbria_prossima' ),
+                    'id'         => 'breadcrumb_category_' . $field_prefix,
+                    'type'       => 'select',
+                    'options'    => $breadcrumb_category_options,
+                    'attributes' => array(
+                        'data-taxonomy' => $field_prefix,
+                        'class'         => 'taxonomy-conditional-field taxonomy-breadcrumb-prefix-field',
+                    ),
+                ));
 
                 $cmb->add_field(array(
                     'name'       => 'Attiva Alert Tassonomia',
@@ -106,11 +134,43 @@ function taxonomy_metabox() {
     }
 }
 
-// JS per mostrare/nascondere campi alert
+add_action( 'admin_notices', 'dup_breadcrumb_taxonomy_conflict_notices' );
+function dup_breadcrumb_taxonomy_conflict_notices() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'toplevel_page_impostazioni-template' !== $screen->id ) {
+		return;
+	}
+
+	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+	if ( 'taxonomy' !== $tab ) {
+		return;
+	}
+
+	$conflicts = array_merge(
+		dup_detect_breadcrumb_category_conflicts(),
+		dup_detect_breadcrumb_taxonomy_conflicts()
+	);
+	if ( empty( $conflicts ) ) {
+		return;
+	}
+
+	echo '<div class="notice notice-warning"><p><strong>' . esc_html__( 'Attenzione — conflitti breadcrumb', 'design_umbria_prossima' ) . '</strong></p><ul style="list-style:disc;margin-left:1.5em;">';
+	foreach ( $conflicts as $message ) {
+		echo '<li>' . esc_html( $message ) . '</li>';
+	}
+	echo '</ul></div>';
+}
+
+// JS per mostrare/nascondere campi per termine
 add_action('admin_footer', 'taxonomy_metabox_scripts');
 function taxonomy_metabox_scripts() {
     $screen = function_exists('get_current_screen') ? get_current_screen() : null;
     if (!$screen || 'toplevel_page_impostazioni-template' !== $screen->id) {
+        return;
+    }
+
+    $tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+    if ( 'taxonomy' !== $tab ) {
         return;
     }
     ?>

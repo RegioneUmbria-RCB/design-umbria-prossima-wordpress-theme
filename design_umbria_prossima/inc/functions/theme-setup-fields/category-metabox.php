@@ -46,7 +46,30 @@ function category_metabox() {
         'options' => $post_types_options,
         'attributes' => array(
             'data-category' => $category->term_id,
-            'class' => 'category-conditional-field',
+            'class' => 'category-conditional-field category-post-type-select',
+        ),
+    ));
+
+    $saved_options = get_option( 'category_metabox', array() );
+    $saved_post_type = isset( $saved_options[ 'post_type_for_category_' . $category->term_id ] )
+        ? (string) $saved_options[ 'post_type_for_category_' . $category->term_id ]
+        : '';
+    $saved_breadcrumb_term = isset( $saved_options[ 'breadcrumb_term_for_category_' . $category->term_id ] )
+        ? (string) $saved_options[ 'breadcrumb_term_for_category_' . $category->term_id ]
+        : '';
+    $breadcrumb_term_options = dup_get_breadcrumb_term_options_for_post_type( $saved_post_type );
+
+    $cmb->add_field(array(
+        'name' => 'Tipologia per breadcrumb',
+        'desc' => 'Opzionale. Scegli un Tipo di Documento oppure un Argomento: il breadcrumb di questa categoria si applica solo ai singoli contenuti con quel valore. Per le pagine archivio tassonomia usa la scheda Taxonomy Page. Lascia vuoto per tutti i contenuti del post type.',
+        'id'   => 'breadcrumb_term_for_category_'.$category->term_id,
+        'type' => 'select',
+        'options' => $breadcrumb_term_options,
+        'default' => $saved_breadcrumb_term,
+        'attributes' => array(
+            'data-category' => $category->term_id,
+            'class' => 'category-conditional-field category-breadcrumb-term-select',
+            'data-saved-value' => $saved_breadcrumb_term,
         ),
     ));
     
@@ -142,34 +165,122 @@ function category_metabox() {
   }
 }
 
+add_action( 'admin_notices', 'dup_breadcrumb_category_conflict_notices' );
+function dup_breadcrumb_category_conflict_notices() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'toplevel_page_impostazioni-template' !== $screen->id ) {
+		return;
+	}
+
+	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+	if ( 'category' !== $tab ) {
+		return;
+	}
+
+	$conflicts = array_merge(
+		dup_detect_breadcrumb_category_conflicts(),
+		dup_detect_breadcrumb_taxonomy_conflicts()
+	);
+	if ( empty( $conflicts ) ) {
+		return;
+	}
+
+	echo '<div class="notice notice-warning"><p><strong>' . esc_html__( 'Attenzione — conflitti breadcrumb', 'design_umbria_prossima' ) . '</strong></p><ul style="list-style:disc;margin-left:1.5em;">';
+	foreach ( $conflicts as $message ) {
+		echo '<li>' . esc_html( $message ) . '</li>';
+	}
+	echo '</ul></div>';
+}
+
 add_action('admin_footer', 'category_metabox_scripts');
 function category_metabox_scripts() {
   $screen = function_exists('get_current_screen') ? get_current_screen() : null;
   if (!$screen || 'toplevel_page_impostazioni-template' !== $screen->id) {
     return;
   }
+
+  $tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+  if ( 'category' !== $tab ) {
+    return;
+  }
+
+  $terms_map = dup_get_breadcrumb_terms_map_for_admin();
   ?>
+  <script>
+    window.dupCategoryBreadcrumbTerms = <?php echo wp_json_encode( $terms_map ); ?>;
+  </script>
   <script>
     jQuery(document).ready(function($) {
       const postTypeSelect = $('#category_post_type');
+      const defaultLabel = <?php echo wp_json_encode( __( 'Tutti i contenuti del post type', 'design_umbria_prossima' ) ); ?>;
+
+      function rebuildBreadcrumbTermSelect($termSelect, postType, savedValue) {
+        const $row = $termSelect.closest('.cmb-row');
+        const groups = (window.dupCategoryBreadcrumbTerms && window.dupCategoryBreadcrumbTerms[postType]) || [];
+        let hasOptions = false;
+
+        $termSelect.empty();
+        $termSelect.append($('<option>', { value: '', text: defaultLabel }));
+
+        groups.forEach(function(group) {
+          if (!group.options || !group.options.length) {
+            return;
+          }
+          hasOptions = true;
+          const $optgroup = $('<optgroup>').attr('label', group.label);
+          group.options.forEach(function(option) {
+            $optgroup.append($('<option>', { value: option.value, text: option.label }));
+          });
+          $termSelect.append($optgroup);
+        });
+
+        if (savedValue && $termSelect.find('option[value="' + savedValue + '"]').length) {
+          $termSelect.val(savedValue);
+        } else {
+          $termSelect.val('');
+        }
+
+        if (postType && hasOptions) {
+          $row.show();
+        } else {
+          $termSelect.val('');
+          $row.hide();
+        }
+      }
+
+      function syncBreadcrumbTermForCategory(categoryId) {
+        const $postTypeField = $('.category-post-type-select[data-category="' + categoryId + '"]');
+        const $termField = $('.category-breadcrumb-term-select[data-category="' + categoryId + '"]');
+        if (!$postTypeField.length || !$termField.length) {
+          return;
+        }
+
+        const postType = $postTypeField.val();
+        const savedValue = $termField.data('saved-value') || $termField.val() || '';
+        rebuildBreadcrumbTermSelect($termField, postType, savedValue);
+      }
 
       function toggleCategoryFields(selectedValue) {
-        // nascondo tutti i repeater
         $('#cmb2-metabox-category_metabox .cmb-repeatable-group').hide();
-        // mostro solo quello della categoria selezionata
         $('#cmb2-metabox-category_metabox #post_list_group_'+selectedValue+'_repeat').show();
 
-        // nascondo tutte le checkbox categoria-specifiche
         $('#cmb2-metabox-category_metabox .category-conditional-field').closest('.cmb-row').hide();
-        // mostro solo quelle della categoria scelta
         $('#cmb2-metabox-category_metabox .category-conditional-field[data-category="'+selectedValue+'"]').closest('.cmb-row').show();
+
+        syncBreadcrumbTermForCategory(selectedValue);
       }
+
+      $(document).on('change', '.category-post-type-select', function() {
+        const categoryId = $(this).data('category');
+        const $termField = $('.category-breadcrumb-term-select[data-category="' + categoryId + '"]');
+        $termField.data('saved-value', '');
+        rebuildBreadcrumbTermSelect($termField, $(this).val(), '');
+      });
 
       postTypeSelect.on('change', function() {
         toggleCategoryFields($(this).val());
       });
 
-      // init allo start
       toggleCategoryFields(postTypeSelect.val());
     });
   </script>

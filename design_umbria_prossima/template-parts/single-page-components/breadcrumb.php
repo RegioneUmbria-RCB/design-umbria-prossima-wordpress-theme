@@ -6,27 +6,6 @@
 
 global $post;
 $position = 1;
-
-/**
- * Restituisce l'ID della prima categoria associata al post type corrente
- */
-function get_current_post_type_category_id() {
-    $options = get_option('category_metabox');
-    if (!is_array($options)) {
-        return false;
-    }
-
-    $post_type = get_post_type();
-
-    foreach ($options as $key => $value) {
-        if (strpos($key, 'post_type_for_category_') === 0 && $value === $post_type) {
-            // Ritorna subito la prima categoria trovata
-            return (int) str_replace('post_type_for_category_', '', $key);
-        }
-    }
-
-    return false;
-}
 ?>
 
 <nav class="breadcrumb-container mt-4" aria-label="breadcrumb">
@@ -43,50 +22,33 @@ function get_current_post_type_category_id() {
 
     <?php $position++; ?>
 
-    <?php if (is_category() || is_tag() || is_tax()) : ?>
-      <!-- Archivio tassonomia -->
-      <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item">
+    <?php if ( is_category() || is_tag() || is_tax() ) : ?>
+      <?php
+      $queried = get_queried_object();
+      if ( $queried instanceof WP_Term && dup_is_taxonomy_breadcrumb_enabled( $queried->taxonomy, $queried->term_id ) ) {
+          dup_breadcrumb_echo_taxonomy_term_trail( $queried->taxonomy, $queried->term_id, $position, true );
+      } else {
+          ?>
+      <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item active">
         <span class="separator">/</span>
-        <span itemprop="item"><span itemprop="name"><?php echo single_term_title('', false); ?></span></span>
-        <meta itemprop="position" content="<?php echo $position; ?>" />
+        <span itemprop="item"><span itemprop="name"><?php echo esc_html( single_term_title( '', false ) ); ?></span></span>
+        <meta itemprop="position" content="<?php echo (int) $position; ?>" />
       </li>
+          <?php
+      }
+      ?>
 
     <?php elseif (is_single()) : ?>
-      <!-- Categoria derivata dal mapping in category_metabox -->
       <?php
-      $category_id = get_current_post_type_category_id();
-      if ($category_id) :
-          $category = get_category($category_id);
-
-          if ($category) :
-              // Se la categoria ha un genitore, lo mostriamo prima
-              if ($category->parent) :
-                  $parent = get_category($category->parent);
-                  if ($parent) :
-      ?>
-                      <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item">
-                        <span class="separator">/</span>
-                        <a class="text-primary" href="<?php echo esc_url(get_category_link($parent)); ?>" itemprop="item">
-                          <span itemprop="name"><?php echo esc_html($parent->name); ?></span>
-                        </a>
-                        <meta itemprop="position" content="<?php echo $position; ?>" />
-                      </li>
-                      <?php $position++; ?>
-      <?php
-                  endif;
-              endif;
-      ?>
-              <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item">
-                <span class="separator">/</span>
-                <a class="text-primary" href="<?php echo esc_url(get_category_link($category)); ?>" itemprop="item">
-                  <span itemprop="name"><?php echo esc_html($category->name); ?></span>
-                </a>
-                <meta itemprop="position" content="<?php echo $position; ?>" />
-              </li>
-              <?php $position++; ?>
-      <?php
-          endif;
-      endif;
+      $breadcrumb_tax_term = dup_get_breadcrumb_taxonomy_term_for_post();
+      if ( $breadcrumb_tax_term ) {
+          dup_breadcrumb_echo_taxonomy_term_trail( $breadcrumb_tax_term->taxonomy, $breadcrumb_tax_term->term_id, $position, false );
+      } else {
+          $category_id = dup_get_breadcrumb_category_id_for_post();
+          if ( $category_id ) {
+              dup_breadcrumb_echo_category_trail( $category_id, $position );
+          }
+      }
       ?>
 
       <!-- Titolo del post -->

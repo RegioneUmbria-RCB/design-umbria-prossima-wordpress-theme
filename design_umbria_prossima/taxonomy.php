@@ -58,41 +58,42 @@ get_header();
                 <?php endif;?>
                 <nav class="breadcrumb-container" aria-label="breadcrumb">
                   <ol class="breadcrumb p-0" data-element="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
-                    <?php
-                    $position = 1;
-
-                    ?>
+                    <?php $position = 1; ?>
                     <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item trail-begin">
-                      <a class="text-primary" href="<?php echo esc_url(home_url('/')); ?>" rel="home" itemprop="item">
+                      <a class="text-primary" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" itemprop="item">
                         <span itemprop="name">Home</span>
                       </a>
-                      <meta itemprop="position" content="<?php echo $position++; ?>">
+                      <meta itemprop="position" content="<?php echo (int) $position++; ?>">
                     </li>
 
                     <?php
-                    $taxonomy       = get_taxonomy($term_taxonomy);
-                    $taxonomy_label = $taxonomy ? $taxonomy->labels->singular_name : '';
-                    $taxonomy_link  = esc_url(home_url('/' . $term_taxonomy));
-                    $category = get_term_by('slug', $taxonomy->name, 'category');
-                 
-                    ?>
-                    <?php if(!empty($category)):?>
+                    if ( dup_is_taxonomy_breadcrumb_enabled( $term_taxonomy, $term_id ) ) {
+                        dup_breadcrumb_echo_taxonomy_term_trail( $term_taxonomy, $term_id, $position, true );
+                    } else {
+                        $taxonomy_obj = get_taxonomy( $term_taxonomy );
+                        $fallback_cat = $taxonomy_obj ? get_term_by( 'slug', $taxonomy_obj->name, 'category' ) : null;
+                        if ( $fallback_cat && ! is_wp_error( $fallback_cat ) ) :
+                            ?>
                       <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item">
                         <span class="separator">/</span>
-                        <a class="text-primary" href="<?php echo $taxonomy_link; ?>" itemprop="item">
-                          <span itemprop="name"><?php echo esc_html($category->name); ?></span>
+                        <a class="text-primary" href="<?php echo esc_url( home_url( '/' . $term_taxonomy ) ); ?>" itemprop="item">
+                          <span itemprop="name"><?php echo esc_html( $fallback_cat->name ); ?></span>
                         </a>
-                        <meta itemprop="position" content="<?php echo $position++; ?>">
+                        <meta itemprop="position" content="<?php echo (int) $position++; ?>">
                       </li>
-                    <?php endif;?>
-
-                    <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item active">
-                      <span class="separator">/</span>
-                      <span itemprop="item">
-                        <span itemprop="name"><?php echo esc_html($term->name); ?></span>
-                      </span>
-                      <meta itemprop="position" content="<?php echo $position++; ?>">
-                    </li>
+                            <?php
+                        endif;
+                        ?>
+                      <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumb-item active">
+                        <span class="separator">/</span>
+                        <span itemprop="item">
+                          <span itemprop="name"><?php echo esc_html( $term->name ); ?></span>
+                        </span>
+                        <meta itemprop="position" content="<?php echo (int) $position++; ?>">
+                      </li>
+                        <?php
+                    }
+                    ?>
                   </ol>
                 </nav>
               </div>
