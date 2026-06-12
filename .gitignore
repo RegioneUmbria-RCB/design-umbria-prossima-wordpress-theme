@@ -1,0 +1,9 @@
+# Cartelle temporanee (sync Bootstrap Italia / tema Comuni)
+_tmp-bi/
+_upstream-comuni/
+
+# Asset di sviluppo locale
+design_umbria_prossima/assets/dev/
+
+# Dipendenze Node
+node_modules/

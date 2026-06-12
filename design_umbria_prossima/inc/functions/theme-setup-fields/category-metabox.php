@@ -93,6 +93,18 @@ function category_metabox() {
         ),
     ));
     $cmb->add_field(array(
+        'name'    => 'Livelli sottocategorie da mostrare',
+        'desc'    => 'Si applica a header e griglia sottocategorie. «Tutti i livelli» mantiene il comportamento attuale. Se la categoria non ha figli, vengono mostrate le categorie sorelle (stesso livello).',
+        'id'      => 'subcategories_depth_'.$category->term_id,
+        'type'    => 'select',
+        'options' => dup_get_category_subcategories_depth_options(),
+        'default' => '',
+        'attributes' => array(
+            'data-category' => $category->term_id,
+            'class' => 'category-conditional-field',
+        ),
+    ));
+    $cmb->add_field(array(
         'name' => 'Mostra elenco contenuti',
         'id'   => 'show_content_list_'.$category->term_id,
         'type' => 'checkbox',

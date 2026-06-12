@@ -150,7 +150,7 @@ get_header();
                                                                 <?php } ?>
 
                                                                 <?php foreach ( $paragrafi_aggiuntivi as $idx => $p ) {
-                                                                    if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) || ! empty( $p['immagine'] ) ) { ?>
+                                                                    if ( dup_documento_pubblico_paragrafo_has_content( $p ) ) { ?>
                                                                 <li class="nav-item">
                                                                     <a class="nav-link" href="#paragrafo-<?php echo (int) $idx; ?>">
                                                                         <span><?php echo esc_html( ! empty( $p['titolo'] ) ? $p['titolo'] : 'Paragrafo ' . ( $idx + 1 ) ); ?></span>
@@ -280,7 +280,7 @@ get_header();
                             <?php } ?>
 
                             <?php foreach ( $paragrafi_aggiuntivi as $idx => $p ) {
-                                if ( ! empty( $p['titolo'] ) || ! empty( $p['testo'] ) || ! empty( $p['immagine'] ) ) {
+                                if ( dup_documento_pubblico_paragrafo_has_content( $p ) ) {
                                     $titolo_paragrafo = ! empty( $p['titolo'] ) ? $p['titolo'] : 'Paragrafo ' . ( $idx + 1 );
                                     $img_val = $p['immagine'] ?? '';
                                     $img_id = is_numeric( $img_val ) ? (int) $img_val : ( $img_val ? attachment_url_to_postid( $img_val ) : 0 );
@@ -321,6 +321,30 @@ get_header();
                                     <figcaption class="figure-caption mt-2"><?php echo esc_html( $img_post->post_excerpt ); ?></figcaption>
                                     <?php endif; ?>
                                 </figure>
+                                <?php } ?>
+                                <?php
+                                $files_di_dettaglio = dup_normalize_cmb2_file_list( $p['files_di_dettaglio'] ?? null );
+                                if ( count( $files_di_dettaglio ) ) { ?>
+                                <h5 class="mt-4 mb-0"><?php esc_html_e( 'Files di dettaglio', 'design_comuni_italia' ); ?></h5>
+                                <div class="card-wrapper card-teaser-wrapper card-teaser-wrapper-equal">
+                                <?php foreach ( $files_di_dettaglio as $file_url ) {
+                                    $doc_id = attachment_url_to_postid( $file_url );
+                                    $doc = get_post( $doc_id );
+                                    if ( $doc ) { ?>
+                                    <div class="card card-teaser shadow-sm p-4 mt-3 rounded border border-light flex-nowrap">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use href="<?php echo get_template_directory_uri(); ?>/inc/origin-tema-comuni/bootstrap-italia/svg/sprites.svg#it-clip"></use>
+                                        </svg>
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a class="text-decoration-none" href="<?php echo esc_url( $file_url ); ?>" aria-label="Scarica il file di dettaglio <?php echo esc_attr( $doc->post_title ); ?>" title="Scarica il file di dettaglio <?php echo esc_attr( $doc->post_title ); ?>">
+                                                    <?php echo esc_html( $doc->post_title ); ?> (<?php echo getFileSizeAndFormat( $file_url ); ?>)
+                                                </a>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                <?php } } ?>
+                                </div>
                                 <?php } ?>
                             </section>
                             <?php }

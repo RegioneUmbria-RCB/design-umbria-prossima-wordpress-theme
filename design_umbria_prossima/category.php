@@ -4,12 +4,14 @@ get_header();
 $metabox = get_option('category_metabox') ?: [];
 $cat_id       = get_queried_object_id();
 $current_cat  = get_queried_object();
+$subcategories_used_sibling_fallback = false;
 $subcategories = get_categories([
     'child_of'   => $current_cat->term_id,
     'hide_empty' => false,
 ]);
 
 if (!$subcategories || count($subcategories) == 0) {
+    $subcategories_used_sibling_fallback = true;
     $subcategories = get_categories([
         'parent'     => $current_cat->parent,
         'hide_empty' => false,
@@ -17,6 +19,11 @@ if (!$subcategories || count($subcategories) == 0) {
 }
 
 $subcategories = array_filter($subcategories, fn($cat) => $cat->term_id != $current_cat->term_id);
+
+$subcategories_depth = $metabox["subcategories_depth_{$cat_id}"] ?? '';
+if ( ! $subcategories_used_sibling_fallback && $subcategories_depth !== '' ) {
+    $subcategories = dup_filter_categories_by_max_depth( $subcategories, $current_cat->term_id, $subcategories_depth );
+}
 
 // $metabox_for_cat = array_filter(
 //     $metabox,

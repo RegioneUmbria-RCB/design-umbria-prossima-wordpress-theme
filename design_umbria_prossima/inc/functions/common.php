@@ -81,6 +81,112 @@ function get_custom_toxonomy(){
 }
 
 /**
+ * Normalizza un valore CMB2 file_list (o URL singolo) in array di URL.
+ *
+ * @param mixed $raw Valore meta CMB2.
+ * @return string[]
+ */
+function dup_normalize_cmb2_file_list( $raw ) {
+	if ( is_array( $raw ) && count( $raw ) ) {
+		return array_values( array_filter( $raw ) );
+	}
+	if ( is_string( $raw ) && $raw ) {
+		return array( $raw );
+	}
+	return array();
+}
+
+/**
+ * Verifica se un paragrafo aggiuntivo del documento pubblico ha contenuto da mostrare.
+ *
+ * @param array $paragrafo Dati del gruppo CMB2 paragrafi_aggiuntivi.
+ */
+function dup_documento_pubblico_paragrafo_has_content( $paragrafo ) {
+	if ( ! is_array( $paragrafo ) ) {
+		return false;
+	}
+	if ( ! empty( $paragrafo['titolo'] ) || ! empty( $paragrafo['testo'] ) || ! empty( $paragrafo['immagine'] ) ) {
+		return true;
+	}
+	return ! empty( dup_normalize_cmb2_file_list( $paragrafo['files_di_dettaglio'] ?? null ) );
+}
+
+/**
+ * Profondità di una categoria rispetto a un antenato (0 = stesso termine).
+ *
+ * @return int Profondità oppure -1 se non è discendente.
+ */
+function dup_get_category_depth_below( $term_id, $root_id ) {
+	$term_id = (int) $term_id;
+	$root_id = (int) $root_id;
+
+	if ( $term_id === $root_id ) {
+		return 0;
+	}
+
+	$cat = get_category( $term_id );
+	if ( ! $cat ) {
+		return -1;
+	}
+
+	$depth     = 0;
+	$parent_id = (int) $cat->parent;
+
+	while ( $parent_id ) {
+		$depth++;
+		if ( $parent_id === $root_id ) {
+			return $depth;
+		}
+		$parent = get_category( $parent_id );
+		if ( ! $parent ) {
+			return -1;
+		}
+		$parent_id = (int) $parent->parent;
+	}
+
+	return -1;
+}
+
+/**
+ * Filtra le categorie mantenendo solo i discendenti entro N livelli dal termine radice.
+ *
+ * @param WP_Term[] $categories
+ * @return WP_Term[]
+ */
+function dup_filter_categories_by_max_depth( array $categories, $root_id, $max_depth ) {
+	$max_depth = (int) $max_depth;
+	if ( $max_depth < 1 ) {
+		return $categories;
+	}
+
+	return array_values(
+		array_filter(
+			$categories,
+			static function ( $cat ) use ( $root_id, $max_depth ) {
+				$depth = dup_get_category_depth_below( $cat->term_id, $root_id );
+				return $depth > 0 && $depth <= $max_depth;
+			}
+		)
+	);
+}
+
+/**
+ * Opzioni select per il limite di livelli sottocategorie in Category Page.
+ *
+ * @return array<string, string>
+ */
+function dup_get_category_subcategories_depth_options() {
+	return array(
+		''  => __( 'Tutti i livelli', 'design_umbria_prossima' ),
+		'1' => __( '1 livello (solo figli diretti)', 'design_umbria_prossima' ),
+		'2' => __( '2 livelli', 'design_umbria_prossima' ),
+		'3' => __( '3 livelli', 'design_umbria_prossima' ),
+		'4' => __( '4 livelli', 'design_umbria_prossima' ),
+		'5' => __( '5 livelli', 'design_umbria_prossima' ),
+	);
+}
+
+/**
  * URL action dei form di ricerca WordPress (rispetta sottocartella, es. /webpg3/search/).
  */
 function get_search_form_action_url() {

@@ -297,6 +297,13 @@ function dci_add_documento_pubblico_metaboxes()
         'default' => 'large',
     ));
 
+    $cmb_descrizione->add_group_field($paragrafi_group_id, array(
+        'id'   => 'files_di_dettaglio',
+        'name' => __('Files di dettaglio', 'design_comuni_italia'),
+        'desc' => __('Allegati mostrati sotto il paragrafo nella pagina del documento', 'design_comuni_italia'),
+        'type' => 'file_list',
+    ));
+
     $cmb_descrizione->add_field(array(
         'id' => $prefix . 'gallery',
         'name' => __('Galleria', 'design_comuni_italia'),
